@@ -1,6 +1,7 @@
 package com.example.schedulemanager.logic.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.schedulemanager.logic.model.Event
@@ -14,4 +15,7 @@ interface EventDao {
 
     @Query("UPDATE Event SET description = :newDescription WHERE id = :eventId")
     fun updateDescriptionById(eventId: Int, newDescription: String)
+
+    @Query("DELETE FROM Event" )
+    fun clearAllEvents()
 }

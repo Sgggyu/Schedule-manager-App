@@ -1,12 +1,18 @@
 package com.example.schedulemanager.logic
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.Plan
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 
 object Repository {
+    val tag = "Repository"
     val eventDao = ScheduleManagerApplication.eventDao
     val planDao = ScheduleManagerApplication.planDao
 
@@ -14,10 +20,15 @@ object Repository {
     // Event 部分
     // -------------------
 
-    suspend fun getEventsBetween(startMillis: Long, endMillis: Long): List<Event> =
-        withContext(Dispatchers.IO) {
-            eventDao.refreshEventsBetween(startMillis, endMillis)
+    fun getEventsBetween(startMillis: Long, endMillis: Long) = liveData(Dispatchers.IO) {
+        try {
+            val events : List<Event> = eventDao.refreshEventsBetween(startMillis, endMillis)
+            emit(Result.success(events))
+        } catch (e: Exception) {
+            emit(Result.failure<List<Event>>(e))
         }
+    }
+
 
     suspend fun insertEvent(event: Event): Long =
         withContext(Dispatchers.IO) {
@@ -29,6 +40,12 @@ object Repository {
             eventDao.updateDescriptionById(eventId, newDescription)
         }
 
+    suspend fun clearAllEvents(){
+        withContext(Dispatchers.IO) {
+            eventDao.clearAllEvents()
+        }
+    }
+
     // -------------------
     // Plan 部分
     // -------------------
@@ -38,10 +55,14 @@ object Repository {
             planDao.insertPlans(plans)
         }
 
-    suspend fun getAllPlans(): List<Plan> =
-        withContext(Dispatchers.IO) {
-            planDao.getAllPlans()
+    fun getAllPlans() = liveData(Dispatchers.IO) {
+        try {
+            val plans = planDao.getAllPlans()
+            emit(Result.success(plans))
+        } catch (e: Exception) {
+            emit(Result.failure<List<Plan>>(e))
         }
+    }
 
     suspend fun clearAllPlans() =
         withContext(Dispatchers.IO) {

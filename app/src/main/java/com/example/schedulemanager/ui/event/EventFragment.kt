@@ -1,20 +1,27 @@
 package com.example.schedulemanager.ui.event
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
-import com.example.schedulemanager.R
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.logic.model.Event
+import java.time.LocalDateTime
 
 class EventFragment : Fragment() {
     private  var _binding: FragmentEventBinding?=null
     val binding get() = _binding!!
-    val viewModel = EventViewModel()
+    val viewModel by lazy { ViewModelProvider(this).get(EventViewModel::class.java)}
+    var currentTime = LocalDateTime.now()
+    lateinit var adapter: EventAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,18 +32,29 @@ class EventFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.eventsLiveData.observe(this, Observer({
+
+        binding.rvWeekEvent.layoutManager = LinearLayoutManager(ScheduleManagerApplication.context, LinearLayoutManager.HORIZONTAL,false)
+        Log.v("test",viewModel.monthEvents.size.toString())
+        adapter =  EventAdapter(viewModel.monthEvents, this)
+        binding.rvWeekEvent.adapter = adapter
+
+        viewModel.Events.observe(this, Observer({
             val events = it.getOrNull()
-            if (events != null) {
-                refreshUI(events)
+            if (events!= null) {
+                viewModel.monthEvents.clear()
+                viewModel.monthEvents.addAll(events)
+                adapter.notifyDataSetChanged()
+
             } else {
-                Toast.makeText(activity,"未能查询到活动信息",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
                 it.exceptionOrNull()?.printStackTrace()
             }
+
         }))
+
+        viewModel.currentTime.value = currentTime
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(binding.rvWeekEvent)
     }
 
-    fun refreshUI(events: List<Event>) {
-
-    }
 }

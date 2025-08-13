@@ -23,9 +23,20 @@ object Repository {
     fun getEventsBetween(startMillis: Long, endMillis: Long) = liveData(Dispatchers.IO) {
         try {
             val events : List<Event> = eventDao.refreshEventsBetween(startMillis, endMillis)
-            emit(Result.success(events))
+            val result = ArrayList<List<Event>>().apply {
+                repeat(32) {
+                    add(emptyList())
+                }
+            }
+            val dayEvents = events.groupBy { it.data.beginTime.dayOfMonth }
+            for (i in 0 until 31) {
+                result[i+1] = dayEvents[i + 1] ?: emptyList()
+            }
+
+            Log.v("test", events.toString())
+            emit(Result.success(result))
         } catch (e: Exception) {
-            emit(Result.failure<List<Event>>(e))
+            emit(Result.failure<ArrayList<List<Event>>>(e))
         }
     }
 

@@ -7,4 +7,24 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+    <color name="sleep">#9C27B0</color>
+
+
+    <color name="work">#2196F3</color>
+
+    <color name="exercise">#4CAF50</color>
+
+    <color name="study">#FF9800</color>
+
+    <color name="meal">#F44336</color>
+
+
+    <color name="leisure">#00BCD4</color>
+
+    <color name="relax">#7E57C2</color>
+
+    <color name="other">#9E9E9E</color>
+
 </resources>

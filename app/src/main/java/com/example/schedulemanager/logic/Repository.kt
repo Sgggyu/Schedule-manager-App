@@ -33,7 +33,6 @@ object Repository {
                 result[i+1] = dayEvents[i + 1] ?: emptyList()
             }
 
-            Log.v("test", events.toString())
             emit(Result.success(result))
         } catch (e: Exception) {
             emit(Result.failure<ArrayList<List<Event>>>(e))

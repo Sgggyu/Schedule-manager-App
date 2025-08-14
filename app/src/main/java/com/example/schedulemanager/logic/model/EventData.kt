@@ -20,5 +20,5 @@ data class EventData(
     // 事件类型（TYPE.SLEEP, TYPE.WORK, TYPE.EXERCISE）
     val type: Int,
 
-    val description: String
+    var description: String
 )

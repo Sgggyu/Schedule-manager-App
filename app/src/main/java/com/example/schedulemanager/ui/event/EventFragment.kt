@@ -32,7 +32,7 @@ class EventFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
+        setListener()
         binding.rvWeekEvent.layoutManager = LinearLayoutManager(ScheduleManagerApplication.context, LinearLayoutManager.HORIZONTAL,false)
         Log.v("test",viewModel.monthEvents.size.toString())
         adapter =  EventAdapter(viewModel.monthEvents, this)
@@ -55,6 +55,18 @@ class EventFragment : Fragment() {
         viewModel.currentTime.value = currentTime
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(binding.rvWeekEvent)
+
+    }
+
+    fun setListener(){
+        binding.overlayView.setOnClickListener {
+            binding.overlayView.visibility = View.GONE
+        }
+
+// 防止点击卡片本身时关闭
+        binding.cvDetail.setOnClickListener {
+            // 什么都不做，拦截点击事件
+        }
     }
 
 }

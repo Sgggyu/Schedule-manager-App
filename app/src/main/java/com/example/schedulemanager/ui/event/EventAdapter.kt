@@ -1,13 +1,28 @@
 package com.example.schedulemanager.ui.event
 
+import android.app.AlertDialog
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.schedulemanager.R
+import com.example.schedulemanager.ScheduleManagerApplication.Companion.context
+import com.example.schedulemanager.logic.Repository
+import com.example.schedulemanager.logic.model.BagOfRender
 import com.example.schedulemanager.logic.model.Event
+import com.example.schedulemanager.logic.model.getRender
+import com.example.schedulemanager.logic.model.toChinese
+import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFragment):
@@ -80,15 +95,17 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
     }
 
     /**
-     * 将事件渲染到指定的日期列容器中
+     * 将事件渲染到指定的日期列容器
+     * 并且添加监听器
      */
     private fun addEventsToDay(container: FrameLayout, events: List<Event>) {
         if (events.isEmpty())
             return
         container.post {
+            //确定卡片高度
             val totalHeight = container.height
             val pxPerMinute = totalHeight / (24f * 60)
-
+            //对每张卡片进行渲染
             for (event in events) {
                 val card = LayoutInflater.from(container.context)
                     .inflate(R.layout.item_event_card, container, false)
@@ -107,10 +124,35 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
                 card.layoutParams = params
 
                 // 设置事件标题
+                val render = getRender(event.data.type)
+                Log.v("test", "render: ${render.info}, icon: ${render.icon}, color: ${render.color}")
                 val title = card.findViewById<TextView>(R.id.tv_event_name)
                 title.text = event.data.name
+                val icon = card.findViewById<ImageView>(R.id.img_event_icon)
+                icon.setImageResource(render.icon)
+                //普通的setCardBackgroundColor会导致卡片的圆角失效
+                //所以使用MaterialCardView的setCardBackgroundColor方法
+                //注意：如果使用了MaterialCardView，需要在布局文件中使用MaterialCardView
+                val cardView = card as MaterialCardView
+                cardView.setCardBackgroundColor(ContextCompat.getColor(context, render.color))
 
+                val startTime = card.findViewById<TextView>(R.id.tv_startTime)
+                val endTime = card.findViewById<TextView>(R.id.tv_endTime)
+                val formatter =java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                Log.v("test", "startTime: ${event.data.beginTime.format(formatter)}")
+                startTime.text = event.data.beginTime.format(formatter).toString()
+                Log.v("test", "startTime: ${event.data.endTime.format(formatter)}")
+                endTime.text = event.data.endTime.format(formatter).toString()
                 container.addView(card)
+                card.setOnClickListener {
+                    // 设置数据
+                    fragment.binding.tvName.text = event.data.name
+                    fragment.binding.tvTimeRange.text = "星期${toChinese(event.data.day)}|${startTime.text} - ${endTime.text}" // 直接用现有 TextView
+                    fragment.binding.etDescription.setText(event.data.description)
+                    fragment.binding.overlayView.visibility = View.VISIBLE
+                    fragment.binding.cvDetail.setCardBackgroundColor(ContextCompat.getColor(context, render.color))
+                }
+
             }
         }
     }

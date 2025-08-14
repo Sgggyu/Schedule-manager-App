@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="sleep">#CE93D8</color>
+
+    <!-- Work - 浅蓝色 -->
+    <color name="work">#90CAF9</color>
+
+    <!-- Exercise - 浅绿色 -->
+    <color name="exercise">#A5D6A7</color>
+
+    <!-- Study - 浅橙色 -->
+    <color name="study">#FFCC80</color>
+
+    <!-- Meal - 浅红色 -->
+    <color name="meal">#EF9A9A</color>
+
+    <!-- Leisure - 浅青色 -->
+    <color name="leisure">#80DEEA</color>
+    <!-- Relax - 浅紫蓝色 -->
+    <color name="relax">#B39DDB</color>
+
+    <!-- Other - 浅灰色 -->
+    <color name="other">#BDBDBD</color>
+</resources>

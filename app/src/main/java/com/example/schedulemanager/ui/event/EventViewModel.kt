@@ -34,7 +34,6 @@ class EventViewModel: ViewModel() {
             startToEnd.first.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
             startToEnd.second.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         )
-        Log.v("test", "start: ${startToEnd.first}, end: ${startToEnd.second},result: ${result.value}")
         result
     }
 

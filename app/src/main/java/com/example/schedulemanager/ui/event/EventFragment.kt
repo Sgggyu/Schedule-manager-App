@@ -1,5 +1,7 @@
 package com.example.schedulemanager.ui.event
 
+import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -28,6 +30,7 @@ class EventFragment : Fragment() {
     ): View? {
         viewModel.currentTime.value = LocalDateTime.now()
         _binding = FragmentEventBinding.inflate(inflater,container,false)
+        binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
 
         return binding.root
     }
@@ -35,8 +38,6 @@ class EventFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         setListener()
-
-
         adapter =  EventAdapter(viewModel.monthEvents, this)
         binding.viewpagerEvent.adapter = adapter
 
@@ -60,14 +61,33 @@ class EventFragment : Fragment() {
     }
 
     fun setListener(){
+        //日期监听器
+        binding.linearSetDatetime.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(requireContext(),null,viewModel.yearValue,viewModel.monthValue-1,viewModel.dayOfMonth)
+            datePickerDialog.show()
+            datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                // 确认年月日
+                val year = datePickerDialog.getDatePicker().getYear();
+                val monthOfYear = datePickerDialog.getDatePicker().getMonth()+1 ;
+                val dayOfMonth = datePickerDialog.getDatePicker().getDayOfMonth();
+                viewModel.currentTime.value = LocalDateTime.of(year,monthOfYear,dayOfMonth,0,0)
+
+                // 关闭dialog
+                datePickerDialog.dismiss()
+                binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
+            }
+        }
+        //
         binding.overlayView.setOnClickListener {
             binding.overlayView.visibility = View.GONE
         }
 
-// 防止点击卡片本身时关闭
+        // 防止点击卡片本身时关闭
         binding.cvDetail.setOnClickListener {
             // 什么都不做，拦截点击事件
         }
+
+
     }
 
 }

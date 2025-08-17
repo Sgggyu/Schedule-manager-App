@@ -95,9 +95,13 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
 
     override fun getItemCount(): Int {
         val currentTime = fragment.viewModel.currentTime.value!!
-        val firstDayOfWeek = currentTime.withDayOfMonth(1).dayOfWeek.value
         val daysInMonth = currentTime.toLocalDate().lengthOfMonth()
-        return  (daysInMonth + firstDayOfWeek-8)/7+1
+        val firstDayOfWeek = currentTime.withDayOfMonth(1).dayOfWeek.value
+        val endDayOfWeek = currentTime.withDayOfMonth(daysInMonth).dayOfWeek.value
+
+        //一个月一供多少周
+
+        return  (daysInMonth + firstDayOfWeek-8 - endDayOfWeek)/7 + 2
     }
 
     /**

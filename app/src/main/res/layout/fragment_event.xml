@@ -11,15 +11,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         >
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#999999"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_week_event"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewpager_event"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent">
+        </androidx.viewpager2.widget.ViewPager2>
+
     </LinearLayout>
     <FrameLayout
         android:id="@+id/overlayView"

@@ -16,8 +16,8 @@ interface EventDao {
     suspend fun insertEvents(events: List<Event>): List<Long>
 
     @Query("UPDATE Event SET description = :newDescription WHERE id = :eventId")
-    fun updateDescriptionById(eventId: Int, newDescription: String)
+    suspend fun updateDescriptionById(eventId: Int, newDescription: String)
 
     @Query("DELETE FROM Event" )
-    fun clearAllEvents()
+    suspend fun clearAllEvents()
 }

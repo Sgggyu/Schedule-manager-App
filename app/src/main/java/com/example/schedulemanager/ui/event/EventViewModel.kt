@@ -13,7 +13,11 @@ import java.time.LocalTime
 import java.time.ZoneId
 
 class EventViewModel: ViewModel() {
-    val currentTime = MutableLiveData<LocalDateTime>()
+    var currentTime = MutableLiveData<LocalDateTime>()
+    val dayOfMonth get() = currentTime.value?.dayOfMonth ?: LocalDateTime.now().dayOfMonth
+    val startTime get() = currentTime.value?.with(LocalTime.MIN) ?: LocalDateTime.now().with(LocalTime.MIN)
+    val endTime get() = currentTime.value?.with(LocalTime.MAX) ?: LocalDateTime.now().with(LocalTime.MAX)
+
     val monthEvents = ArrayList<List<Event>>().apply {
         repeat(32) {
             add(emptyList())

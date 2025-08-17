@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import com.example.schedulemanager.R
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.logic.model.Event
@@ -20,23 +21,24 @@ class EventFragment : Fragment() {
     private  var _binding: FragmentEventBinding?=null
     val binding get() = _binding!!
     val viewModel by lazy { ViewModelProvider(this).get(EventViewModel::class.java)}
-    var currentTime = LocalDateTime.now()
     lateinit var adapter: EventAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        viewModel.currentTime.value = LocalDateTime.now()
         _binding = FragmentEventBinding.inflate(inflater,container,false)
+
         return binding.root
     }
-
+    
     override fun onStart() {
         super.onStart()
         setListener()
-        binding.rvWeekEvent.layoutManager = LinearLayoutManager(ScheduleManagerApplication.context, LinearLayoutManager.HORIZONTAL,false)
-        Log.v("test",viewModel.monthEvents.size.toString())
+
+
         adapter =  EventAdapter(viewModel.monthEvents, this)
-        binding.rvWeekEvent.adapter = adapter
+        binding.viewpagerEvent.adapter = adapter
 
         viewModel.Events.observe(this, Observer({
             val events = it.getOrNull()
@@ -44,7 +46,8 @@ class EventFragment : Fragment() {
                 viewModel.monthEvents.clear()
                 viewModel.monthEvents.addAll(events)
                 adapter.notifyDataSetChanged()
-
+                val position = Math.floor((viewModel.dayOfMonth-(8-viewModel.startTime.dayOfWeek.value))/7.0) + 1
+                Log.v("test","position:$position") // 滚动到本周的第一天
             } else {
                 Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
                 it.exceptionOrNull()?.printStackTrace()
@@ -52,9 +55,7 @@ class EventFragment : Fragment() {
 
         }))
 
-        viewModel.currentTime.value = currentTime
-        val snapHelper = LinearSnapHelper()
-        snapHelper.attachToRecyclerView(binding.rvWeekEvent)
+
 
     }
 

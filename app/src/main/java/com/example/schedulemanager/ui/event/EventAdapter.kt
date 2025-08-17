@@ -52,6 +52,7 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
                 view.findViewById(com.example.schedulemanager.R.id.frame_day7)
             )
         )
+        val month = view.findViewById<TextView>(R.id.tv_month)
     }
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -72,12 +73,17 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
         val startOfWeek = firstMonday.plusWeeks(position.toLong())
 
 
-
+        holder.month.text = "${startOfWeek.monthValue}"
         // 渲染一周的日期和卡片
         for (i in 0 until 7) {
             val date = startOfWeek.plusDays(i.toLong())
             if (date.monthValue == currentTime.monthValue) {
                 holder.dayList[i].text = date.dayOfMonth.toString()
+                if (date.dayOfMonth == currentTime.dayOfMonth) {
+                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.work)) // 设置今天的日期背景色,蓝色
+                }else{
+                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.white)) // 设置今天的日期背景色,白色
+                }
             } else {
                 holder.dayList[i].text = ""
             }
@@ -125,7 +131,6 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
 
                 // 设置事件标题
                 val render = getRender(event.data.type)
-                Log.v("test", "render: ${render.info}, icon: ${render.icon}, color: ${render.color}")
                 val title = card.findViewById<TextView>(R.id.tv_event_name)
                 title.text = event.data.name
                 val icon = card.findViewById<ImageView>(R.id.img_event_icon)
@@ -139,7 +144,6 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
                 val startTime = card.findViewById<TextView>(R.id.tv_startTime)
                 val endTime = card.findViewById<TextView>(R.id.tv_endTime)
                 val formatter =java.time.format.DateTimeFormatter.ofPattern("HH:mm")
-                Log.v("test", "startTime: ${event.data.beginTime.format(formatter)}")
                 startTime.text = event.data.beginTime.format(formatter).toString()
                 Log.v("test", "startTime: ${event.data.endTime.format(formatter)}")
                 endTime.text = event.data.endTime.format(formatter).toString()

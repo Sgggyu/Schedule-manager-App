@@ -12,7 +12,7 @@ import com.example.schedulemanager.ui.event.EventFragment
 import java.time.LocalDateTime
 import java.util.Date
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     lateinit var binding: ActivityMainBinding
     var currentTime = LocalDateTime.now()
 

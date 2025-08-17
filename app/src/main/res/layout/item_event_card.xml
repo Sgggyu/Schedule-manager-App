@@ -36,7 +36,6 @@
             android:layout_height="0dp"
             android:layout_gravity="center_horizontal"
             android:visibility="invisible"
-            android:textColor="@color/white"
             />
 
         <TextView
@@ -44,16 +43,14 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"/>
+            android:layout_height="wrap_content"/>
         <TextView
             android:id="@+id/tv_endTime"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/white"/>
+            android:layout_marginTop="10dp"/>
 
     </LinearLayout>
 

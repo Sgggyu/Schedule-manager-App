@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryVariant">#0D47A1</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
+    <!-- Secondary -->
+    <color name="colorSecondary">#03A9F4</color>
+    <color name="colorSecondaryVariant">#0288D1</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <!-- Background / Surface -->
+    <color name="colorBackground">#0A192F</color>
+    <color name="colorSurface">#112240</color>
+    <color name="colorOnBackground">#E6F1FF</color>
+    <color name="colorOnSurface">#CCD6F6</color>
+
+    <!-- Error -->
+    <color name="colorError">#CF6679</color>
 
     <color name="sleep">#CE93D8</color>
 

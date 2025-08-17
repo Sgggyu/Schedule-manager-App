@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- 主色调（Primary） -->
+    <!-- Primary -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryVariant">#0D47A1</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
+    <!-- Secondary -->
+    <color name="colorSecondary">#03A9F4</color>
+    <color name="colorSecondaryVariant">#0288D1</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+
+    <!-- Background / Surface -->
+    <color name="colorBackground">#F4F7FB</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnBackground">#0D1B2A</color>
+    <color name="colorOnSurface">#1B263B</color>
+
+    <!-- Error -->
+    <color name="colorError">#CF6679</color>
+
+    <!-- 错误色（红色保持不变，强调对比） -->
+    <color name="blue_error">#CF6679</color>
 
 
     <color name="sleep">#9C27B0</color>

@@ -80,9 +80,9 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
             if (date.monthValue == currentTime.monthValue) {
                 holder.dayList[i].text = date.dayOfMonth.toString()
                 if (date.dayOfMonth == currentTime.dayOfMonth) {
-                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.work)) // 设置今天的日期背景色,蓝色
+                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorPrimary)) // 设置今天的日期背景色,蓝色
                 }else{
-                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.white)) // 设置今天的日期背景色,白色
+                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground)) // 设置今天的日期背景色,白色
                 }
             } else {
                 holder.dayList[i].text = ""

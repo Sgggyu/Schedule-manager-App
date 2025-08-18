@@ -23,9 +23,12 @@ import com.example.schedulemanager.MainActivity
 import com.example.schedulemanager.R
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
+import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Event
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class EventFragment : Fragment() {
     private  var _binding: FragmentEventBinding?=null
@@ -64,7 +67,17 @@ class EventFragment : Fragment() {
             }
 
         }))
-
+        //如果当前已经在进行活动，直接启动DoingEventActivity
+        if (Repository.isEventInfoSaved()){
+            val intent = Intent(activity, DoingEventActivity::class.java)
+            val eventMap = Repository.getSavedEventInfo()
+            intent.putExtra("event_name", eventMap["eventName"] as String )
+            intent.putExtra("event_type", eventMap["eventType"] as String)
+            intent.putExtra("event_index", eventMap["typeId"] as Int)
+            intent.putExtra("event_start_time", eventMap["startTime"] as Long)
+            intent.putExtra("event_goal", eventMap["eventGoal"] as String)
+            startActivity(intent)
+        }
 
 
     }
@@ -86,7 +99,7 @@ class EventFragment : Fragment() {
                 binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
             }
         }
-
+        //悬浮按钮监听器
         binding.fab.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_cast_event, null)
             val editTextInput = dialogView.findViewById<android.widget.EditText>(R.id.editText_input)
@@ -100,24 +113,25 @@ class EventFragment : Fragment() {
                 selectedIndex = position
             }
             //处理对话框逻辑
+            //先构建对话框
             val dialog = MaterialAlertDialogBuilder(requireContext())
                         .setView(dialogView)
                         .setPositiveButton("发起活动",null)
                         .setNegativeButton ("取消",null)
                         .create()
-
-
-
+            // 监听对话框显示事件
+            //禁用确定按钮，直到输入有效
             dialog.setOnShowListener {
                 val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 positiveButton.isEnabled = false // 初始时禁用按钮
             }
+            // 显示对话框，为了后续取得按钮实例
             dialog.show()
+            // 获取对话框中的正面按钮，来设置它的可用状态
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            Log.v("test","positiveButton:${positiveButton == null}")
+            // 正面按钮可用状态的验证逻辑
             fun validateInput() {
                 val inputText = editTextInput.text.toString().trim()
-                val selectedText = editTextDropdown.text.toString().trim()
                 positiveButton.isEnabled =  inputText.isNotEmpty() && selectedIndex != -1
             }
             editTextInput.addTextChangedListener(object : TextWatcher{
@@ -140,15 +154,20 @@ class EventFragment : Fragment() {
                 val index = selectedIndex
                 val goal = editTextGoal.text.toString().trim()
                 val selectedText = items[index]
+                val startTimeMillis = viewModel.currentTime.value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 val intent = Intent(activity, DoingEventActivity::class.java)
                 intent.putExtra("event_name", input)
                 intent.putExtra("event_type", selectedText)
                 intent.putExtra("event_index", index)
+                intent.putExtra("event_start_time", startTimeMillis)
                 intent.putExtra("event_goal", goal)
                 startActivity(intent)
+                Repository.saveEventInfo(input,selectedText,index,startTimeMillis,goal)
                 dialog.dismiss()
             }
         }
+
+        //点击卡片以外的背景可以让卡片消失
         binding.overlayView.setOnClickListener {
             binding.overlayView.visibility = View.GONE
         }
@@ -157,7 +176,6 @@ class EventFragment : Fragment() {
         binding.cvDetail.setOnClickListener {
             // 什么都不做，拦截点击事件
         }
-
 
     }
 

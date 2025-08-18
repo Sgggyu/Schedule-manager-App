@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.schedulemanager.ScheduleManagerApplication
+import com.example.schedulemanager.logic.dao.EventInfoDao
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.Plan
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,7 @@ object Repository {
         }
     }
 
+
     // -------------------
     // Plan 部分
     // -------------------
@@ -78,4 +80,16 @@ object Repository {
         withContext(Dispatchers.IO) {
             planDao.clearAllPlans()
         }
+
+    //SharedPreferences部分
+    fun saveEventInfo(
+        eventName: String,
+        eventType: String,
+        typeId: Int,
+        startTime: Long,
+        eventGoal: String
+    )  = EventInfoDao.saveEventInfo(eventName, startTime, eventType,typeId, eventGoal)
+    fun getSavedEventInfo() = EventInfoDao.getSavedEventInfo()
+    fun isEventInfoSaved() = EventInfoDao.isEventInfoSaved()
+    fun clearEventInfo() = EventInfoDao.clearEventInfo()
 }

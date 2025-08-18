@@ -46,6 +46,8 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.work:work-runtime:2.8.1")
+    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

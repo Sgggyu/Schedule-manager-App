@@ -1,22 +1,30 @@
 package com.example.schedulemanager.ui.event
 
+
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import com.example.schedulemanager.DoingEventActivity
+import com.example.schedulemanager.MainActivity
 import com.example.schedulemanager.R
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.logic.model.Event
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.time.LocalDateTime
 
 class EventFragment : Fragment() {
@@ -24,6 +32,7 @@ class EventFragment : Fragment() {
     val binding get() = _binding!!
     val viewModel by lazy { ViewModelProvider(this).get(EventViewModel::class.java)}
     lateinit var adapter: EventAdapter
+//    val activity = requireActivity() as MainActivity
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,7 +86,69 @@ class EventFragment : Fragment() {
                 binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
             }
         }
-        //
+
+        binding.fab.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_cast_event, null)
+            val editTextInput = dialogView.findViewById<android.widget.EditText>(R.id.editText_input)
+            val editTextDropdown = dialogView.findViewById<android.widget.AutoCompleteTextView>(R.id.editText_dropdown)
+            val editTextGoal = dialogView.findViewById<android.widget.EditText>(R.id.editText_goal)
+            val items = listOf("睡觉", "工作", "锻炼", "学习", "吃饭", "休闲", "放松","其他")
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
+            editTextDropdown.setAdapter(adapter)
+            var selectedIndex = -1 // 用于记录选中的下拉框索引
+            editTextDropdown.setOnItemClickListener { _, _, position, _ ->
+                selectedIndex = position
+            }
+            //处理对话框逻辑
+            val dialog = MaterialAlertDialogBuilder(requireContext())
+                        .setView(dialogView)
+                        .setPositiveButton("发起活动",null)
+                        .setNegativeButton ("取消",null)
+                        .create()
+
+
+
+            dialog.setOnShowListener {
+                val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                positiveButton.isEnabled = false // 初始时禁用按钮
+            }
+            dialog.show()
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            Log.v("test","positiveButton:${positiveButton == null}")
+            fun validateInput() {
+                val inputText = editTextInput.text.toString().trim()
+                val selectedText = editTextDropdown.text.toString().trim()
+                positiveButton.isEnabled =  inputText.isNotEmpty() && selectedIndex != -1
+            }
+            editTextInput.addTextChangedListener(object : TextWatcher{
+                override fun afterTextChanged(s: android.text.Editable?) {
+                    validateInput()
+                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            // 下拉框选择监听
+            editTextDropdown.setOnItemClickListener { _, _, position, _ ->
+                selectedIndex = position
+                validateInput()
+            }
+
+            // 点击确定时逻辑
+            positiveButton.setOnClickListener {
+                val input = editTextInput.text.toString().trim()
+                val index = selectedIndex
+                val goal = editTextGoal.text.toString().trim()
+                val selectedText = items[index]
+                val intent = Intent(activity, DoingEventActivity::class.java)
+                intent.putExtra("event_name", input)
+                intent.putExtra("event_type", selectedText)
+                intent.putExtra("event_index", index)
+                intent.putExtra("event_goal", goal)
+                startActivity(intent)
+                dialog.dismiss()
+            }
+        }
         binding.overlayView.setOnClickListener {
             binding.overlayView.visibility = View.GONE
         }

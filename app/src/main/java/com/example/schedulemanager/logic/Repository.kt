@@ -6,11 +6,14 @@ import androidx.lifecycle.liveData
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.logic.dao.EventInfoDao
 import com.example.schedulemanager.logic.model.Event
+import com.example.schedulemanager.logic.model.EventData
 import com.example.schedulemanager.logic.model.Plan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 object Repository {
     val tag = "Repository"
@@ -41,9 +44,26 @@ object Repository {
     }
 
 
-    suspend fun insertEvent(event: Event): Long =
+    suspend fun insertEvent(event: Event): List<Long> =
         withContext(Dispatchers.IO) {
-            eventDao.insertEvent(event)
+            //假如event开始和结束时间在两天，我们就分割成两个event存入，这样就可以每天管每天的任务记录
+            val eventList = ArrayList<Event>()
+            val beginDay = event.data.beginTime.toLocalDate()
+            val endDay = event.data.endTime.toLocalDate()
+
+            if (beginDay == endDay){
+                eventList.add(event)
+            }else{
+                var data = event.data.copy(beginTime = event.data.beginTime,
+                    endTime = beginDay.atTime(LocalTime.MAX),
+                    day = beginDay.dayOfWeek.value)
+                eventList.add(event.copy(data = data))
+                data = event.data.copy(beginTime = endDay.atTime(LocalTime.MIN),
+                    endTime = event.data.endTime,
+                    day = endDay.dayOfWeek.value)
+                eventList.add(event.copy(data = data))
+            }
+            eventDao.insertEvents(eventList)
         }
 
     suspend fun updateEventDescription(eventId: Int, newDescription: String) =
@@ -92,4 +112,6 @@ object Repository {
     fun getSavedEventInfo() = EventInfoDao.getSavedEventInfo()
     fun isEventInfoSaved() = EventInfoDao.isEventInfoSaved()
     fun clearEventInfo() = EventInfoDao.clearEventInfo()
+    fun saveDescription(description: String) = EventInfoDao.saveDescription(description)
+    fun getEventDescription(): String? = EventInfoDao.getEventDescription()
 }

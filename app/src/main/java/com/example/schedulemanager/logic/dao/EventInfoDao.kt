@@ -16,13 +16,22 @@ object EventInfoDao {
             putString("eventGoal", eventGoal)
         }
     }
+    fun saveDescription(description: String) {
+        sharedPreferences().edit {
+            putString("eventDescription", description)
+        }
+    }
+
+    fun getEventDescription(): String? {
+        return sharedPreferences().getString("eventDescription", "")
+    }
     fun getSavedEventInfo(): Map<String, Any?> {
         return mapOf(
             "eventName" to sharedPreferences().getString("eventName", ""),
             "startTime" to sharedPreferences().getLong("startTime", 0L),
             "typeId" to sharedPreferences().getInt("typeId", 0),
             "eventType" to sharedPreferences().getString("eventType", ""),
-            "eventGoal" to sharedPreferences().getString("eventGoal", "")
+            "eventGoal" to sharedPreferences().getString("eventGoal", ""),
         )
     }
     fun isEventInfoSaved(): Boolean {
@@ -39,6 +48,7 @@ object EventInfoDao {
             remove("typeId")
             remove("eventType")
             remove("eventGoal")
+            remove("eventDescription")
         }
     }
 }

@@ -29,6 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.math.floor
 
 class EventFragment : Fragment() {
     private  var _binding: FragmentEventBinding?=null
@@ -55,17 +56,18 @@ class EventFragment : Fragment() {
 
         viewModel.Events.observe(this, Observer({
             val events = it.getOrNull()
+
             if (events!= null) {
                 viewModel.monthEvents.clear()
                 viewModel.monthEvents.addAll(events)
-                adapter.notifyDataSetChanged()
-                val position = Math.floor((viewModel.dayOfMonth-(8-viewModel.startTime.dayOfWeek.value))/7.0) + 1
-                Log.v("test","position:$position") // 滚动到本周的第一天
+                val position = floor((viewModel.dayOfMonth - (8 - viewModel.startTime.dayOfWeek.value) - viewModel.dayOfWeek) / 7.0) + 2
+                adapter.notifyItemChanged(position.toInt())
+                binding.viewpagerEvent.setCurrentItem(position.toInt(),false)
             } else {
                 Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
                 it.exceptionOrNull()?.printStackTrace()
             }
-
+            binding.swipeEvent.isRefreshing = false
         }))
         //如果当前已经在进行活动，直接启动DoingEventActivity
         if (Repository.isEventInfoSaved()){
@@ -76,6 +78,7 @@ class EventFragment : Fragment() {
             intent.putExtra("event_index", eventMap["typeId"] as Int)
             intent.putExtra("event_start_time", eventMap["startTime"] as Long)
             intent.putExtra("event_goal", eventMap["eventGoal"] as String)
+            intent.putExtra("event_description", Repository.getEventDescription())
             startActivity(intent)
         }
 
@@ -83,6 +86,10 @@ class EventFragment : Fragment() {
     }
 
     fun setListener(){
+        //下拉刷新监听器
+        binding.btnRefresh.setOnClickListener {
+            refreshEvents()
+        }
         //日期监听器
         binding.linearSetDatetime.setOnClickListener {
             val datePickerDialog = DatePickerDialog(requireContext(),null,viewModel.yearValue,viewModel.monthValue-1,viewModel.dayOfMonth)
@@ -99,6 +106,7 @@ class EventFragment : Fragment() {
                 binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
             }
         }
+
         //悬浮按钮监听器
         binding.fab.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_cast_event, null)
@@ -148,13 +156,13 @@ class EventFragment : Fragment() {
                 validateInput()
             }
 
-            // 点击确定时逻辑
+            // 点击确定逻辑
             positiveButton.setOnClickListener {
                 val input = editTextInput.text.toString().trim()
                 val index = selectedIndex
                 val goal = editTextGoal.text.toString().trim()
                 val selectedText = items[index]
-                val startTimeMillis = viewModel.currentTime.value.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                val startTimeMillis = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 val intent = Intent(activity, DoingEventActivity::class.java)
                 intent.putExtra("event_name", input)
                 intent.putExtra("event_type", selectedText)
@@ -177,6 +185,12 @@ class EventFragment : Fragment() {
             // 什么都不做，拦截点击事件
         }
 
+    }
+
+    private fun refreshEvents() {
+        // 刷新事件列表
+        viewModel.currentTime.value = viewModel.currentTime.value
+        binding.swipeEvent.isRefreshing = true
     }
 
 }

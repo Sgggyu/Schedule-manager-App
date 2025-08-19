@@ -42,12 +42,11 @@ android {
 }
 
 dependencies {
-    val room_version = "2.7.2"
-    implementation("androidx.room:room-runtime:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-    implementation("androidx.work:work-runtime:2.8.1")
-    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation("androidx.work:work-runtime:2.10.3")
+    implementation (libs.androidx.coordinatorlayout)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

@@ -1,5 +1,6 @@
 package com.example.schedulemanager
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
@@ -25,6 +26,7 @@ import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.EventData
 import com.example.schedulemanager.ui.doingEvent.DoingEventViewModel
+import com.example.schedulemanager.ui.doingEvent.NotificationService
 import com.example.schedulemanager.ui.theme.ScheduleManagerTheme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
@@ -50,6 +52,8 @@ class DoingEventActivity : BaseActivity() {
                 Toast.makeText(this@DoingEventActivity, "请通过保存来结束当前任务", Toast.LENGTH_SHORT).show()
             }
         })
+        val serviceIntent = Intent(this, NotificationService::class.java)
+        startForegroundService(serviceIntent)
         //获取传递过来的数据
         if (viewModel.eventName == "") {
             viewModel.eventName = intent.getStringExtra("event_name") ?: ""
@@ -144,7 +148,7 @@ class DoingEventActivity : BaseActivity() {
                     .setMessage("当前任务时间不合法，必须大于30分钟且小于24小时,此次任务不记录,确定要结束吗？")
                     .setNegativeButton ("取消",null)
                     .setPositiveButton("确定"){
-                        _: Any, _: Any ->
+                            _: Any, _: Any ->
                         viewModel.eventName = ""
                         viewModel.startTime = null
                         viewModel.eventType = ""

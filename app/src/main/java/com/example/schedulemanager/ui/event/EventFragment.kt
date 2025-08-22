@@ -44,31 +44,10 @@ class EventFragment : Fragment() {
         viewModel.currentTime.value = LocalDateTime.now()
         _binding = FragmentEventBinding.inflate(inflater,container,false)
         binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
-
-        return binding.root
-    }
-    
-    override fun onStart() {
-        super.onStart()
         setListener()
         adapter =  EventAdapter(viewModel.monthEvents, this)
         binding.viewpagerEvent.adapter = adapter
 
-        viewModel.Events.observe(this, Observer({
-            val events = it.getOrNull()
-
-            if (events!= null) {
-                viewModel.monthEvents.clear()
-                viewModel.monthEvents.addAll(events)
-                val position = floor((viewModel.dayOfMonth - (8 - viewModel.startTime.dayOfWeek.value) - viewModel.dayOfWeek) / 7.0) + 2
-                adapter.notifyItemChanged(position.toInt())
-                binding.viewpagerEvent.setCurrentItem(position.toInt(),false)
-            } else {
-                Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
-                it.exceptionOrNull()?.printStackTrace()
-            }
-            binding.swipeEvent.isRefreshing = false
-        }))
         //如果当前已经在进行活动，直接启动DoingEventActivity
         if (Repository.isEventInfoSaved()){
             val intent = Intent(activity, DoingEventActivity::class.java)
@@ -81,8 +60,23 @@ class EventFragment : Fragment() {
             intent.putExtra("event_description", Repository.getEventDescription())
             startActivity(intent)
         }
+        viewModel.Events.observe(viewLifecycleOwner, Observer({
+            val events = it.getOrNull()
 
-
+            if (events!= null) {
+                viewModel.monthEvents.clear()
+                viewModel.monthEvents.addAll(events)
+                adapter.notifyDataSetChanged()
+            } else {
+                Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
+                it.exceptionOrNull()?.printStackTrace()
+            }
+        }))
+        return binding.root
+    }
+    
+    override fun onStart() {
+        super.onStart()
     }
 
     fun setListener(){
@@ -122,7 +116,7 @@ class EventFragment : Fragment() {
             }
             //处理对话框逻辑
             //先构建对话框
-            val dialog = MaterialAlertDialogBuilder(requireContext())
+            val dialog = MaterialAlertDialogBuilder(requireContext(),R.style.CustomMaterialAlertDialog )
                         .setView(dialogView)
                         .setPositiveButton("发起活动",null)
                         .setNegativeButton ("取消",null)
@@ -190,7 +184,6 @@ class EventFragment : Fragment() {
     private fun refreshEvents() {
         // 刷新事件列表
         viewModel.currentTime.value = viewModel.currentTime.value
-        binding.swipeEvent.isRefreshing = true
     }
 
 }

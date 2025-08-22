@@ -23,4 +23,15 @@
         <!-- Error -->
         <item name="colorError">@color/colorError</item>
     </style>
+
+    <style name="CustomMaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- 设置圆角 -->
+        <item name="shapeAppearanceOverlay">@style/CustomDialogShape</item>
+    </style>
+
+    <style name="CustomDialogShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item> <!-- 改这里控制圆角大小 -->
+    </style>
+
 </resources>

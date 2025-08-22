@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.event.EventFragment">
+    tools:context=".ui.event.EventFragment"
+    android:fitsSystemWindows="true">
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -66,10 +67,6 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#999999"/>
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_event"
-            android:layout_width="0dp"
-            android:layout_height="0dp"/>
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewpager_event"
                 android:layout_width="match_parent"

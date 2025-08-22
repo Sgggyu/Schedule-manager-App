@@ -142,10 +142,10 @@ class DoingEventActivity : BaseActivity() {
                 2-> textTime[0] * 60L + textTime[1]
                 else -> 0L
             }
-            if (seconds<1800L || seconds>= 24*3600L){
-                val dialog = MaterialAlertDialogBuilder(this)
+            if (seconds<900L || seconds>= 24*3600L){
+                val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
                     .setTitle("时间错误")
-                    .setMessage("当前任务时间不合法，必须大于30分钟且小于24小时,此次任务不记录,确定要结束吗？")
+                    .setMessage("当前任务时间不合法，必须大于15分钟且小于24小时,此次任务不记录,确定要结束吗？")
                     .setNegativeButton ("取消",null)
                     .setPositiveButton("确定"){
                             _: Any, _: Any ->
@@ -160,7 +160,7 @@ class DoingEventActivity : BaseActivity() {
                 dialog.show()
             }else {
                 // 如果时间合法，弹出结束任务对话框
-                val dialog = MaterialAlertDialogBuilder(this)
+                val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
                     .setTitle("结束任务")
                     .setMessage("是否结束当前任务？")
                     .setNegativeButton("取消", null)

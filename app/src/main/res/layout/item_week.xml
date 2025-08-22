@@ -208,8 +208,6 @@
                     android:gravity="center"
                     android:text="0\n\n\n2\n\n\n4\n\n\n6\n\n\n8\n\n\n10\n\n\n12\n\n\n14\n\n\n16\n\n\n18\n\n\n20\n\n\n22\n\n\n24"
                     android:textSize="19sp" />
-                <include
-                    layout="@layout/gridbackground"/>
                 <!-- 7列事件布局 -->
             </FrameLayout>
             <!--容器部分用于后续添加卡片-->

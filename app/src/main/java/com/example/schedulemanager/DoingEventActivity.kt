@@ -155,6 +155,8 @@ class DoingEventActivity : BaseActivity() {
                         viewModel.eventGoal = ""
                         viewModel.description = ""
                         Repository.clearEventInfo()
+                        val serviceIntent = Intent(this, NotificationService::class.java)
+                        stopService(serviceIntent)
                         finish()
                     }
                 dialog.show()
@@ -184,6 +186,8 @@ class DoingEventActivity : BaseActivity() {
                         viewModel.eventGoal = ""
                         viewModel.description = ""
                         Repository.clearEventInfo()
+                        val serviceIntent = Intent(this, NotificationService::class.java)
+                        stopService(serviceIntent)
                         finish()
                     }
                 dialog.show()

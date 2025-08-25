@@ -29,7 +29,7 @@
             android:id="@+id/linear_toolbar"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="?attr/actionBarSize"
             >
             <LinearLayout
                 android:id="@+id/linear_set_datetime"

@@ -14,6 +14,7 @@ import java.time.ZoneId
 
 class EventViewModel: ViewModel() {
     var currentTime = MutableLiveData<LocalDateTime>()
+
     val yearValue get() = currentTime.value?.year?: LocalDateTime.now().year
     val monthValue get() = currentTime.value?.monthValue?:LocalDateTime.now().monthValue
     val dayOfWeek get() = currentTime.value?.dayOfWeek?.value ?: LocalDateTime.now().dayOfWeek.value

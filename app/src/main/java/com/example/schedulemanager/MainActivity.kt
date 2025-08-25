@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.schedulemanager.databinding.ActivityMainBinding
 import com.example.schedulemanager.ui.event.EventFragment
+import com.example.schedulemanager.ui.plan.PlanFragment
 import java.time.LocalDateTime
 import java.util.Date
 
@@ -22,15 +23,19 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val fragmentManager: FragmentManager = supportFragmentManager
-        val transaction: FragmentTransaction? = fragmentManager.beginTransaction()
+
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.item_event ->{
+                    val transaction: FragmentTransaction? = fragmentManager.beginTransaction()
                     transaction?.replace(R.id.frame_fragment_container, EventFragment())
+                    transaction?.commit()
                     true
                 }
                 R.id.item_plan ->{
-                    Toast.makeText(this,"选定计划 暂未开放", Toast.LENGTH_SHORT).show()
+                    val transaction: FragmentTransaction? = fragmentManager.beginTransaction()
+                    transaction?.replace(R.id.frame_fragment_container, PlanFragment())
+                    transaction?.commit()
                     true
                 }
                 R.id.item_summary ->{
@@ -40,6 +45,7 @@ class MainActivity : BaseActivity() {
                 else -> false
             }
         }
+
         binding.bottomNavigation.selectedItemId = R.id.item_event
     }
 

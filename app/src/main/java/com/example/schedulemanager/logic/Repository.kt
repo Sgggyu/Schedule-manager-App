@@ -81,6 +81,10 @@ object Repository {
     // -------------------
     // Plan 部分
     // -------------------
+    suspend fun insertPlan(plan: Plan) =
+        withContext(Dispatchers.IO) {
+            planDao.insertPlan(plan)
+        }
 
     suspend fun insertPlans(plans: List<Plan>) =
         withContext(Dispatchers.IO) {
@@ -93,6 +97,12 @@ object Repository {
             emit(Result.success(plans))
         } catch (e: Exception) {
             emit(Result.failure<List<Plan>>(e))
+        }
+    }
+
+    suspend fun deletePlan(id: Int){
+        withContext(Dispatchers.IO) {
+            planDao.deletePlan(id)
         }
     }
 

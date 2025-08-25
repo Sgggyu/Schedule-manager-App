@@ -34,17 +34,18 @@ import kotlin.math.floor
 class EventFragment : Fragment() {
     private  var _binding: FragmentEventBinding?=null
     val binding get() = _binding!!
-    val viewModel by lazy { ViewModelProvider(this).get(EventViewModel::class.java)}
+    val viewModel by lazy { ViewModelProvider(this)[EventViewModel::class.java] }
     lateinit var adapter: EventAdapter
 //    val activity = requireActivity() as MainActivity
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        viewModel.currentTime.value = LocalDateTime.now()
         _binding = FragmentEventBinding.inflate(inflater,container,false)
+        viewModel.currentTime.value = LocalDateTime.now()
         binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
         setListener()
+        binding.viewpagerEvent.offscreenPageLimit = viewModel.monthEvents.size
         adapter =  EventAdapter(viewModel.monthEvents, this)
         binding.viewpagerEvent.adapter = adapter
 
@@ -74,10 +75,7 @@ class EventFragment : Fragment() {
         }))
         return binding.root
     }
-    
-    override fun onStart() {
-        super.onStart()
-    }
+
 
     fun setListener(){
         //下拉刷新监听器

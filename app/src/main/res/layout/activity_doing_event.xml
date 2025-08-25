@@ -95,7 +95,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="活动种类："
+                android:text="活动目标："
                 android:textSize="14sp"/>
             <TextView
                 android:id="@+id/tv_doing_goal"
@@ -109,7 +109,7 @@
             android:id="@+id/text_input_layout_summary"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="总结"
             app:boxStrokeColor="?attr/colorPrimary"
@@ -127,8 +127,7 @@
                 android:id="@+id/et_doing_summary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minLines="12"
-                android:maxLines="12"
+                android:lines="12"
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
                 android:scrollHorizontally="false"

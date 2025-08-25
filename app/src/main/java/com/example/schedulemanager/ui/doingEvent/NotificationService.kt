@@ -11,6 +11,7 @@ import android.util.Log
 import com.example.schedulemanager.MainActivity
 import com.example.schedulemanager.R
 import com.example.schedulemanager.logic.Repository
+import com.example.schedulemanager.logic.model.getRender
 
 class NotificationService : Service() {
     lateinit var manager :NotificationManager

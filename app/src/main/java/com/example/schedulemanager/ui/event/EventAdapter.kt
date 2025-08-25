@@ -77,15 +77,11 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
         // 渲染一周的日期和卡片
         for (i in 0 until 7) {
             val date = startOfWeek.plusDays(i.toLong())
-            if (date.monthValue == currentTime.monthValue) {
-                holder.dayList[i].text = date.dayOfMonth.toString()
-                if (date.dayOfMonth == currentTime.dayOfMonth) {
-                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorPrimary)) // 设置今天的日期背景色,蓝色
-                }else{
-                    holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground)) // 设置今天的日期背景色,白色
-                }
-            } else {
-                holder.dayList[i].text = ""
+            holder.dayList[i].text = date.dayOfMonth.toString()
+            if (date.dayOfMonth == currentTime.dayOfMonth) {
+                holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorPrimary)) // 设置今天的日期背景色,蓝色
+            }else{
+                holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground)) // 设置今天的日期背景色,白色
             }
             holder.containerList[i].removeAllViews()
             addEventsToDay(holder.containerList[i], monthList[date.dayOfMonth])

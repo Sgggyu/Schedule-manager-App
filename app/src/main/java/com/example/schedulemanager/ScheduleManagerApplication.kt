@@ -10,6 +10,7 @@ import com.example.schedulemanager.logic.dao.PlanDao
 import com.example.schedulemanager.logic.database.AppDatabase
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.EventData
+import com.example.schedulemanager.logic.model.Plan
 import com.example.schedulemanager.logic.model.TYPE
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
@@ -77,9 +78,15 @@ class ScheduleManagerApplication : Application() {
         // 插入测试数据到数据库
         // 使用协程来执行数据库操作
 
-        GlobalScope.launch {
-            eventDao.insertEvents(august2025Events)
-        }
+//        GlobalScope.launch {
+//            eventDao.insertEvents(august2025Events)
+//        }
 
+    }
+
+    fun test2(){
+//        GlobalScope.launch {
+//            planDao.insertPlan(Plan(0,"早睡计划", TYPE.SLEEP, 0, "23:00",true))
+//        }
     }
 }

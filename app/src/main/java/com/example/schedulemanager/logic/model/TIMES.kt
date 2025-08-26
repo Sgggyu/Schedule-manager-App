@@ -1,7 +1,6 @@
 package com.example.schedulemanager.logic.model
 
 object TIMES {
-    const val everyday = 0
-    const val weekday = 1
-
+    const val EVERYDAY = 0
+    const val WEEKDAY = 1
 }

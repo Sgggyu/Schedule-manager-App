@@ -10,17 +10,17 @@ import com.example.schedulemanager.logic.model.Plan
 @Dao
 interface PlanDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlan(plan: Plan)
+    suspend fun insertPlan(plan: Plan)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertPlans(plans: List<Plan>)
+    suspend fun insertPlans(plans: List<Plan>)
 
-    @Query("SELECT * FROM Plan")
-    fun getAllPlans(): List<Plan>
+    @Query("SELECT * FROM plan_table")
+    suspend fun getAllPlans(): List<Plan>
 
-    @Query("DELETE FROM Plan WHERE id = :id")
-    fun deletePlan(id: Int)
+    @Query("DELETE FROM plan_table WHERE id = :id")
+    suspend fun deletePlan(id: Int)
 
-    @Query("DELETE FROM Plan")
-    fun clearAllPlans()
+    @Query("DELETE FROM plan_table")
+    suspend fun clearAllPlans()
 }

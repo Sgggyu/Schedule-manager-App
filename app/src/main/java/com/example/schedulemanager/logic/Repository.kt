@@ -93,7 +93,7 @@ object Repository {
 
     fun getAllPlans() = liveData(Dispatchers.IO) {
         try {
-            val plans = planDao.getAllPlans()
+            val plans : List<Plan> = planDao.getAllPlans()
             emit(Result.success(plans))
         } catch (e: Exception) {
             emit(Result.failure<List<Plan>>(e))

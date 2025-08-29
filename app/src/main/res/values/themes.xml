@@ -22,6 +22,8 @@
 
         <!-- Error -->
         <item name="colorError">@color/colorError</item>
+
+        <item name="android:colorControlNormal">@color/colorPrimary</item>
     </style>
 
     <style name="CustomMaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">

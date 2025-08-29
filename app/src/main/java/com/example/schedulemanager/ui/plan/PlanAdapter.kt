@@ -35,10 +35,12 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
     companion object {
         object PlanDiffCallback : DiffUtil.ItemCallback<Plan>() {
             override fun areItemsTheSame(oldItem: Plan, newItem: Plan): Boolean =
-                oldItem.id == newItem.id // 需要 Plan 有唯一 id
+                oldItem.id == newItem.id
 
             override fun areContentsTheSame(oldItem: Plan, newItem: Plan): Boolean =
                 oldItem == newItem
+
+
         }
     }
 
@@ -62,7 +64,6 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
             TIMES.WEEKDAY to "工作日",
         )
 
-        Log.v("test", "planSize is ${fragment.viewModel.selectedList.size}")
         holder.planName.text =
             "${plan.name}(${getRender(plan.type).info})"
         holder.planInfo.text =
@@ -72,7 +73,7 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
             //假如计划启用，则卡片为实心色
             holder.card.setCardBackgroundColor(ContextCompat.getColor(context,getRender(plan.type).color) )
         }else{
-            holder.card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground) )
+            holder.card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.colorSurface) )
         }
 
         //编辑模式
@@ -85,11 +86,12 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
                 holder.btnSelected.isChecked = !holder.btnSelected.isChecked
             }
         }else{
+            holder.btnSelected.visibility = View.INVISIBLE
             holder.card.setOnClickListener {
                 plan.isEnable = !plan.isEnable
                 when(plan.isEnable){
                     true -> holder.card.setCardBackgroundColor(ContextCompat.getColor(context,getRender(plan.type).color) )
-                    false -> holder.card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground) )
+                    false -> holder.card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.colorSurface) )
                 }
             }
         }

@@ -167,7 +167,6 @@ class DoingEventActivity : BaseActivity() {
                     .setMessage("是否结束当前任务？")
                     .setNegativeButton("取消", null)
                     .setPositiveButton("确定") { _: Any, _: Any ->
-
                         val event = Event(0,EventData(
                             viewModel.eventName,
                             viewModel.startTime!!,

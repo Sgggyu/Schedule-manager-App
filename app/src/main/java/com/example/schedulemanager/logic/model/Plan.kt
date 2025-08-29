@@ -6,13 +6,14 @@ import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-@Entity(tableName = "plan_table")
+@Entity(tableName = "planTable")
 data class Plan(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val name: String,
     val type: Int,
     val triggerMode: Int,
-    val triggerTime: String,
+    val triggerStartTime: String,
+    val triggerEndTime: String,
     var isEnable: Boolean
 )

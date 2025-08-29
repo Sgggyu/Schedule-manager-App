@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,11 +17,13 @@ import android.widget.EditText
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.schedulemanager.databinding.ActivityPlanDialogBinding
 import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Plan
 import com.example.schedulemanager.logic.model.TIMES
+import com.github.gzuliyujiang.wheelpicker.TimePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
@@ -34,7 +37,6 @@ class PlanDialogActivity : AppCompatActivity() {
         binding.btnPlanSave.isEnabled = false
         setListener()
         setSupportActionBar(binding.toolbar)
-        binding.timePickerPlan.setIs24HourView(true)
         supportActionBar?.let{
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeAsUpIndicator(R.drawable.ic_close_plan)
@@ -113,12 +115,63 @@ class PlanDialogActivity : AppCompatActivity() {
         binding.inputPlanType.setOnClickListener {
             dialogPlanType.show()
         }
+        var startHour = -1
+        var startMinute = -1
+        var startTimeString: String? = null
+        //开始时间
+        val startTimepicker = TimePicker(this)
+        startTimepicker.apply{
+            wheelLayout.setSelectedTextColor(getResources().getColor(R.color.colorPrimary))
+            wheelLayout.setIndicatorEnabled(false)
+            setBackgroundColor(1, 16, getResources().getColor(R.color.colorSurface))
+            okView.setTextColor(ContextCompat.getColor(this@PlanDialogActivity,R.color.colorPrimary))
+            cancelView.setTextColor(ContextCompat.getColor(this@PlanDialogActivity,R.color.colorPrimary))
+            setOnTimePickedListener {hour,minute,second ->
+                startHour = hour
+                startMinute = minute
+                startTimeString = String.format("%02d:%02d", hour,minute)
+                binding.tvTriggerStartValue.text = startTimeString
+                //在已经设置过一次的情况下，再次点击显示的是设置的时间
+            }
+        }
+        binding.inputTriggerStart.setOnClickListener {
+            if (startHour != -1 && startMinute != -1){
+                startTimepicker.wheelLayout.hourWheelView.setDefaultPosition(startHour)
+                startTimepicker.wheelLayout.minuteWheelView.setDefaultPosition(startMinute)
+            }
+            startTimepicker.show()
+        }
+        //结束时间
 
+        var endHour = -1
+        var endMinute = -1
+        var endTimeString: String? = null
+        //开始时间
+        val endTimepicker = TimePicker(this)
+        endTimepicker.apply{
+            wheelLayout.setSelectedTextColor(getResources().getColor(R.color.colorPrimary))
+            wheelLayout.setIndicatorEnabled(false)
+            setBackgroundColor(1, 16, getResources().getColor(R.color.colorSurface))
+            okView.setTextColor(ContextCompat.getColor(this@PlanDialogActivity,R.color.colorPrimary))
+            cancelView.setTextColor(ContextCompat.getColor(this@PlanDialogActivity,R.color.colorPrimary))
+            setOnTimePickedListener {hour,minute,second ->
+                endHour = hour
+                endMinute = minute
+                endTimeString = String.format("%02d:%02d", hour,minute)
+                binding.tvTriggerEndValue.text = endTimeString
+                //在已经设置过一次的情况下，再次点击显示的是设置的时间
+            }
+        }
+        binding.inputTriggerEnd.setOnClickListener {
+            endTimepicker.show()
+        }
         //保存按钮状态检查，需要名字，类型，触发类型均不为空
         fun saveCheck() {
             binding.btnPlanSave.isEnabled = binding.tvPlanSetNameValue.text != ""
                     && binding.tvPlanSetTriggerValue.text != ""
                     && binding.tvPlanSetTypeValue.text != ""
+                    && binding.tvTriggerStartValue.text != ""
+                    && binding.tvTriggerEndValue.text != ""
         }
 
         val watcher = object : TextWatcher {
@@ -128,21 +181,26 @@ class PlanDialogActivity : AppCompatActivity() {
                 saveCheck()
             }
         }
+
+
+
         binding.tvPlanSetNameValue.addTextChangedListener(watcher)
         binding.tvPlanSetTypeValue.addTextChangedListener(watcher)
         binding.tvPlanSetTriggerValue.addTextChangedListener(watcher)
+        binding.tvTriggerStartValue.addTextChangedListener(watcher)
+        binding.tvTriggerEndValue.addTextChangedListener(watcher)
+
         binding.btnPlanSave.setOnClickListener {
             val name = binding.tvPlanSetNameValue.text.toString()
             val type = binding.tvPlanSetTypeValue.text.toString()
             val trigger = binding.tvPlanSetTriggerValue.text.toString()
-            val hour = binding.timePickerPlan.hour
-            val minute = binding.timePickerPlan.minute
-            val timeString = String.format("%02d:%02d", hour, minute)
+
             val intent = Intent().apply {
                 putExtra("plan_name", name)
                 putExtra("plan_type", typeIndex)
                 putExtra("plan_trigger", triggerIndex)
-                putExtra("plan_time", timeString)
+                putExtra("plan_start_time", startTimeString)
+                putExtra("plan_end_time", endTimeString)
             }
             setResult(Activity.RESULT_OK, intent)
             finish()

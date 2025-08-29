@@ -44,6 +44,9 @@ android {
 dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
+    implementation ("com.github.gzu-liyujiang.AndroidPicker:Common:4.1.12")
+    implementation ("com.github.gzu-liyujiang.AndroidPicker:WheelView:4.1.12")
+    implementation ("com.github.gzu-liyujiang.AndroidPicker:WheelPicker:4.1.12")
     implementation("androidx.work:work-runtime:2.10.3")
     implementation (libs.androidx.coordinatorlayout)
     implementation(libs.androidx.swiperefreshlayout)

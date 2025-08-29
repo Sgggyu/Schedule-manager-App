@@ -11,9 +11,9 @@ import kotlinx.coroutines.launch
 
 class PlanViewModel: ViewModel() {
     val isEdit = MutableLiveData<Boolean>(false)
-    var planList = Repository.getAllPlans()
+    var planList = MutableLiveData<Result<List<Plan>>>()
     var selectedList = MutableList<Boolean>(0){false}
-    val plans = ArrayList<Plan>()
+    var plans = ArrayList<Plan>()
 
     fun insertPlan(plan: Plan){
         viewModelScope.launch {
@@ -21,8 +21,19 @@ class PlanViewModel: ViewModel() {
         }
     }
 
-
+    fun deletePlans(plans: List<Plan>){
+        viewModelScope.launch {
+            Repository.deletePlans(plans.map { it.id })
+        }
+    }
     fun refreshPlans(){
-       planList = Repository.getAllPlans()
+        viewModelScope.launch {
+            try {
+                val plans = Repository.getAllPlans()
+                planList.value = Result.success(plans)
+            } catch (e: Exception) {
+                planList.value = Result.failure(e)
+            }
+        }
     }
 }

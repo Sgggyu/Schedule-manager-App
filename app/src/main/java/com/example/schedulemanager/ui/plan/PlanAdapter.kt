@@ -35,13 +35,16 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
     companion object {
         object PlanDiffCallback : DiffUtil.ItemCallback<Plan>() {
             override fun areItemsTheSame(oldItem: Plan, newItem: Plan): Boolean =
-                oldItem.id == newItem.id
+                oldItem.id == newItem.id && oldItem.name == newItem.name
 
             override fun areContentsTheSame(oldItem: Plan, newItem: Plan): Boolean =
                 oldItem == newItem
 
 
         }
+    }
+    override fun submitList(list: List<Plan>?) {
+        super.submitList(list?.let { ArrayList(it) })
     }
 
     override fun onCreateViewHolder(
@@ -67,7 +70,7 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
         holder.planName.text =
             "${plan.name}(${getRender(plan.type).info})"
         holder.planInfo.text =
-            "时间:${plan.triggerTime} |触发类型:${triggerToChinese[plan.triggerMode]}"
+            "时间:${plan.triggerStartTime} -- ${plan.triggerEndTime} |触发类型:${triggerToChinese[plan.triggerMode]}"
 
         if (plan.isEnable) {
             //假如计划启用，则卡片为实心色

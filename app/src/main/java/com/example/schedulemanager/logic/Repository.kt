@@ -9,6 +9,7 @@ import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.EventData
 import com.example.schedulemanager.logic.model.Plan
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -91,21 +92,22 @@ object Repository {
             planDao.insertPlans(plans)
         }
 
-    fun getAllPlans() = liveData(Dispatchers.IO) {
-        try {
-            val plans : List<Plan> = planDao.getAllPlans()
-            emit(Result.success(plans))
-        } catch (e: Exception) {
-            emit(Result.failure<List<Plan>>(e))
-        }
+    suspend fun getAllPlans(): List<Plan> {
+        return planDao.getAllPlans()
     }
+
+
 
     suspend fun deletePlan(id: Int){
         withContext(Dispatchers.IO) {
             planDao.deletePlan(id)
         }
     }
-
+    suspend fun deletePlans(ids:List<Int>){
+        withContext(Dispatchers.IO) {
+            planDao.deletePlans(ids)
+        }
+    }
     suspend fun clearAllPlans() =
         withContext(Dispatchers.IO) {
             planDao.clearAllPlans()

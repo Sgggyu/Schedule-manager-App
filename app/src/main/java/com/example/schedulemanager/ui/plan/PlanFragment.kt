@@ -26,19 +26,24 @@ class PlanFragment : Fragment() {
     val viewModel by lazy {
         ViewModelProvider(this)[PlanViewModel::class.java]
     }
+
     val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode == Activity.RESULT_OK){
             val data = it.data
             val name = data?.getStringExtra("plan_name") ?: ""
             val typeIndex = data?.getIntExtra("plan_type",0) ?: 0
             val triggerIndex = data?.getIntExtra("plan_trigger",0) ?: -1
-            val timeString = data?.getStringExtra("plan_time") ?: ""
-            val insertPlan = Plan(0,name,typeIndex,triggerIndex,timeString,true)
-            viewModel.refreshPlans()
+            val startTimeString = data?.getStringExtra("plan_start_time") ?: ""
+            val endTimeString = data?.getStringExtra("plan_end_time") ?: ""
+            val insertPlan = Plan(0,name,typeIndex,triggerIndex,startTimeString,endTimeString,true)
+            viewModel.plans.add(insertPlan)
+            viewModel.selectedList = MutableList<Boolean>(viewModel.plans.size){false}
             Log.v("test","after insert, plans size is ${viewModel.plans.size}")
+            adapter.submitList(viewModel.plans.toList())
             viewModel.insertPlan(insertPlan)
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,16 +61,17 @@ class PlanFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.rvPlan.layoutManager = layoutManager
-
+        //每次进入该fragment便会刷新
         viewModel.planList.observe(viewLifecycleOwner, Observer{
+            Log.v("test","observe 触发")
             viewModel.plans.clear()
-            viewModel.plans.addAll(it.getOrNull() ?: emptyList())
-            Log.v("test","planList changed, new size is ${viewModel.plans.size}")
+            viewModel.plans.addAll(viewModel.planList.value?.getOrNull()?: emptyList())
+//            Log.v("test","planList changed, new size is ${viewModel.plans.size}")
             viewModel.selectedList = MutableList(viewModel.plans.size){false}
-            adapter.submitList(viewModel.plans)
+            adapter.submitList(viewModel.plans.toList())
+            adapter.notifyItemInserted(viewModel.plans.size)
         })
 
-        viewModel.refreshPlans()
         viewModel.isEdit.observe(viewLifecycleOwner, Observer{
             if (it){
                 adapter.enterEditMode(it)
@@ -77,6 +83,7 @@ class PlanFragment : Fragment() {
             }
 
         })
+        viewModel.refreshPlans()
         //设置监听器
         setListener()
         return binding.root
@@ -84,20 +91,43 @@ class PlanFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.refreshPlans()
+        Log.v("test","fragment start")
+        //每次进入都会对selectedList进行刷新
+
+        Log.v("test","after insert, selectedList size is ${viewModel.selectedList.size}")
+
     }
     private fun setListener(){
         binding.btnDelete.setOnClickListener {
             if (viewModel.isEdit.value == true){
                 //保存修改
+
+                val newList = ArrayList<Plan>()
+                val removeList = ArrayList<Plan>()
+                for (i in 0 .. viewModel.selectedList.size-1){
+                    //被选中的进入删除列表
+                    when(viewModel.selectedList[i]){
+                        true ->{
+                            removeList.add(viewModel.plans[i])
+                        }
+                        false ->{
+                            newList.add(viewModel.plans[i])
+                        }
+                    }
+                }
+                viewModel.plans.clear()
+                viewModel.plans.addAll(newList)
+                viewModel.selectedList = MutableList(viewModel.plans.size){false}
+                adapter.submitList(viewModel.plans)
+                viewModel.deletePlans(removeList)
                 viewModel.isEdit.value = false
+
             }else{
                 //进入编辑模式
                 viewModel.isEdit.value = true
             }
         }
         binding.fabPlan.setOnClickListener {
-
             val intent = Intent(this.context, PlanDialogActivity::class.java)
             launcher.launch(intent)
         }

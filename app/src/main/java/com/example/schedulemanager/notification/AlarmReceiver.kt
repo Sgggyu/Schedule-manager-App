@@ -4,19 +4,25 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import com.example.schedulemanager.ScheduleManagerApplication
+import com.example.schedulemanager.logic.model.Plan
 import com.example.schedulemanager.logic.model.TIMES
 import com.example.schedulemanager.notification.NotificationHelper
 import java.util.Calendar
 
 
 class AlarmReceiver: BroadcastReceiver() {
+    val alarmHelper = AlarmHelper(context = ScheduleManagerApplication.context)
     override fun onReceive(context: Context?, intent: Intent?) {
+
         Log.v("test","闹钟响了")
         val startOrEnd = intent?.getStringExtra("type")?:""
         val triggerMode = intent?.getIntExtra("triggerMode",0)
-        val planId = intent?.getIntExtra("planId",0)
+        val planId = intent?.getIntExtra("planId",0)?:0
         val title = intent?.getStringExtra("title")?:""
-        val content = intent?.getStringExtra("content")?:""
+        val triggerStartTime = intent?.getStringExtra("triggerStartTime")?:""
+        val triggerEndTime = intent?.getStringExtra("triggerEndTime")?:""
+        val content = "计划时间：$triggerStartTime - $triggerEndTime"
         val planType = intent?.getIntExtra("planType",-1)?: -1
         val duration = intent?.getIntExtra("duration",25)?: -1
         val calendar = Calendar.getInstance()
@@ -25,35 +31,60 @@ class AlarmReceiver: BroadcastReceiver() {
             TIMES.EVERYDAY ->{
                 // 每天都触发
                 if (context != null) {
-                    if (startOrEnd == "start"){
+                    if (startOrEnd == "start") {
                         NotificationHelper(context).planStartNotification(
+                            planId,
                             title,
                             content,
                             planType,
                             duration,
                             TIMES.EVERYDAY
                         )
-                    } else if (startOrEnd == "end") {
-                        NotificationHelper(context).planEndNotification(title,planType)
+
+                        alarmHelper.setRepeatingAlarm(
+                            Plan(
+                                id = planId,
+                                name = title,
+                                type = planType,
+                                triggerMode = triggerMode ?: 0,
+                                triggerStartTime = triggerStartTime,
+                                triggerEndTime = triggerEndTime,
+                                isEnable = true
+                            ), "start", interval = 24 * 60 * 60 * 1000L
+                        )
                     }
                 }
             }
 
             TIMES.WEEKDAY -> {
                 // 仅在工作日触发（周一到周五）
-                if (dayOfWeek in Calendar.MONDAY..Calendar.FRIDAY) {
+                var interval = 24*60*60*1000L
+                if (dayOfWeek in Calendar.MONDAY..Calendar.THURSDAY) {
+
                     if (context != null) {
                         if (startOrEnd == "start"){
                             NotificationHelper(context).planStartNotification(
+                                planId,
                                 title,
                                 content,
                                 planType,
                                 duration,
                                 TIMES.EVERYDAY
                             )
-                        } else if (startOrEnd == "end") {
-                            NotificationHelper(context).planEndNotification(title,planType)
+                        } else {
+                            interval = 3*24*60*60*1000L // 周五的结束闹钟间隔三天到下周一
                         }
+                        alarmHelper.setRepeatingAlarm(
+                            Plan(
+                                id = planId,
+                                name = title,
+                                type = planType,
+                                triggerMode = triggerMode ?: 0,
+                                triggerStartTime = triggerStartTime,
+                                triggerEndTime = triggerEndTime,
+                                isEnable = true
+                            ), "start", interval = interval
+                        )
                     }
                 }
             }

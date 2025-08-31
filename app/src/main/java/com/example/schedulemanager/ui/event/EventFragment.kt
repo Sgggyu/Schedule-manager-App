@@ -80,11 +80,12 @@ class EventFragment : Fragment() {
             intent.putExtra("event_description", Repository.getEventDescription())
             startActivity(intent)
         }
+        Log.v("test","is Plan Saved is ${Repository.isPlanSaved()}")
         if (Repository.isPlanSaved()){
             val dialog = MaterialAlertDialogBuilder(requireContext(),R.style.CustomMaterialAlertDialog )
                 .setTitle("是否开始规划任务？")
                 .setMessage("进行${Repository.getSavedPlanInfo()["planName"]}")
-                .setPositiveButton("发起活动") { _, _ ->
+                .setPositiveButton("确认") { _, _ ->
                     val planMap = Repository.getSavedPlanInfo()
                     val planName = planMap["planName"] as String
                     val planType = planMap["planType"] as Int

@@ -21,7 +21,7 @@ class NotificationHelper(val context: Context)  {
 
 
 
-    fun planStartNotification(title: String, content: String, planType: Int, duration: Int, type: Int){
+    fun planStartNotification(planId: Int,title: String, content: String, planType: Int, duration: Int, type: Int){
         //计划相关通知
         val intent = Intent(context, MainActivity::class.java).apply{
             putExtra("planName",title)
@@ -40,10 +40,10 @@ class NotificationHelper(val context: Context)  {
             .setAutoCancel(true)
             .setContentIntent(pi)
             .build()
-        manager.notify( (System.currentTimeMillis()%10000).toInt(),notification)
+        manager.notify(planId*2 ,notification)
     }
 
-    fun planEndNotification(title: String, type: Int){
+    fun planEndNotification(planId: Int, title: String, type: Int){
         //计划相关通知
         val intent = Intent(context, MainActivity::class.java).apply{
             putExtra("type","end")
@@ -58,7 +58,7 @@ class NotificationHelper(val context: Context)  {
             .setAutoCancel(true)
             .setContentIntent(pi)
             .build()
-        manager.notify( (System.currentTimeMillis()%10000).toInt(),notification)
+        manager.notify( planId*2+1,notification)
     }
 
 }

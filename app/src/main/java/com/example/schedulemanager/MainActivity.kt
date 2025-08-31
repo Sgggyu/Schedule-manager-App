@@ -1,6 +1,7 @@
 package com.example.schedulemanager
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +26,7 @@ class MainActivity : BaseActivity() {
         setContentView(binding.root)
         val fragmentManager: FragmentManager = supportFragmentManager
         val intentType = intent?.getStringExtra("intentType")
+
         when(intentType){
             "fromPlanNotification" -> {
                 if (Repository.isPlanSaved()){
@@ -35,6 +37,7 @@ class MainActivity : BaseActivity() {
                 val type = intent?.getStringExtra("type")?:""
                 val duration = intent?.getIntExtra("duration",0) ?: 0
                 Repository.savePlanInfo(planName,planType,duration)
+                Log.v("test","MainActivity,isPlanSaved: ${Repository.isPlanSaved()}")
             }
 
             else -> {

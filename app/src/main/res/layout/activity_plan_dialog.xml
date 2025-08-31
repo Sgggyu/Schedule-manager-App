@@ -160,7 +160,7 @@
         android:id="@+id/btn_plan_save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="保存并启用"
+        android:text="保存"
         android:layout_margin="32dp"
         android:padding="6dp"
         app:cornerRadius="32dp"

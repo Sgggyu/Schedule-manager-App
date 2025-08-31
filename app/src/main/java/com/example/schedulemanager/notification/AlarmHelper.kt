@@ -28,13 +28,15 @@ class AlarmHelper(private val context: Context) {
     }
 
 
-    fun setRepeatingAlarm(plan: Plan,type: String){
+    fun setRepeatingAlarm(plan: Plan,type: String, interval: Long = 0) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra("triggerMode",plan.triggerMode)
             //通知内容区
             putExtra("planId",plan.id)
             putExtra("title",plan.name)
-            putExtra("content","${plan.triggerStartTime} - ${plan.triggerEndTime}")
+            putExtra("triggerStartTime",plan.triggerStartTime)
+            putExtra("triggerEndTime",plan.triggerEndTime)
+            putExtra("triggerMode",plan.triggerMode)
             putExtra("duration", getDuration(plan))
             putExtra("planType",plan.type)
             putExtra("type",type) // 标识是开始闹钟
@@ -47,30 +49,32 @@ class AlarmHelper(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerMillis = if(type == "start") parseTimeToMillis(plan.triggerStartTime) else parseTimeToMillis(plan.triggerEndTime)
+        var triggerMillis = parseTimeToMillis(plan.triggerStartTime)
+        if (triggerMillis < System.currentTimeMillis()) {
+            // 如果触发时间已经过去，设置为明天
+            triggerMillis += 24 * 60 * 60 * 1000 // 加一天的毫秒数
+        }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) { // Android 12+
             if (!alarmManager.canScheduleExactAlarms()) {
-
-
+                TODO("用户引导写一下")
             }
         }
         //只进行开始时间提醒，结束时间再
         when(type){
             "start" ->{
                 //测试使用
-                val triggerMillis = System.currentTimeMillis() + 10_000
-                Log.v("test","闹钟设置成功，计划：${plan.name}，类型：$type, 时间：${if(type == "start") plan.triggerStartTime else plan.triggerEndTime}, 毫秒数：$triggerMillis")
+                Log.v("test","闹钟设置成功，id：${plan.id*2}，触发时间：${plan.triggerStartTime}，触发模式：${plan.triggerMode}，计划类型：${plan.type}")
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
-                    triggerMillis,
+                    triggerMillis + interval,
                     pendingIntent)
             }
             "end" ->{
                 alarmManager.setAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
-                    triggerMillis,
+                    triggerMillis + interval,
                     pendingIntent
                 )
             }
@@ -82,6 +86,7 @@ class AlarmHelper(private val context: Context) {
 
     // 取消闹钟
     fun cancelAlarm(plan: Plan) {
+        Log.v("test","取消闹钟，id：${plan.id*2}")
         val startIntent = Intent(context, AlarmReceiver::class.java)
         val startPendingIntent = PendingIntent.getBroadcast(
             context,

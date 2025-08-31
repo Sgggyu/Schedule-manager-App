@@ -37,8 +37,7 @@ class PlanFragment : Fragment() {
             val triggerIndex = data?.getIntExtra("plan_trigger",0) ?: -1
             val startTimeString = data?.getStringExtra("plan_start_time") ?: ""
             val endTimeString = data?.getStringExtra("plan_end_time") ?: ""
-            val insertPlan = Plan(0,name,typeIndex,triggerIndex,startTimeString,endTimeString,true)
-            alarmHelper.setAlarm(insertPlan,"start")
+            val insertPlan = Plan(0,name,typeIndex,triggerIndex,startTimeString,endTimeString,false)
             viewModel.refreshAfterInsert(insertPlan)
         }
     }

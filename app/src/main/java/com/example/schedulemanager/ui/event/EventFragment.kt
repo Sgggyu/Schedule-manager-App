@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.compose.material3.RangeSlider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,17 +51,7 @@ class EventFragment : Fragment() {
         binding.viewpagerEvent.adapter = adapter
 
         //如果当前已经在进行活动，直接启动DoingEventActivity
-        if (Repository.isEventInfoSaved()){
-            val intent = Intent(activity, DoingEventActivity::class.java)
-            val eventMap = Repository.getSavedEventInfo()
-            intent.putExtra("event_name", eventMap["eventName"] as String )
-            intent.putExtra("event_type", eventMap["eventType"] as String)
-            intent.putExtra("event_index", eventMap["typeId"] as Int)
-            intent.putExtra("event_start_time", eventMap["startTime"] as Long)
-            intent.putExtra("event_goal", eventMap["eventGoal"] as String)
-            intent.putExtra("event_description", Repository.getEventDescription())
-            startActivity(intent)
-        }
+
         viewModel.Events.observe(viewLifecycleOwner, Observer({
             val events = it.getOrNull()
 
@@ -76,6 +67,48 @@ class EventFragment : Fragment() {
         return binding.root
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (Repository.isEventInfoSaved()){
+            val intent = Intent(activity, DoingEventActivity::class.java)
+            val eventMap = Repository.getSavedEventInfo()
+            intent.putExtra("event_name", eventMap["eventName"] as String )
+            intent.putExtra("event_type", eventMap["eventType"] as String)
+            intent.putExtra("event_index", eventMap["typeId"] as Int)
+            intent.putExtra("event_start_time", eventMap["startTime"] as Long)
+            intent.putExtra("event_goal", eventMap["eventGoal"] as String)
+            intent.putExtra("event_description", Repository.getEventDescription())
+            startActivity(intent)
+        }
+        if (Repository.isPlanSaved()){
+            val dialog = MaterialAlertDialogBuilder(requireContext(),R.style.CustomMaterialAlertDialog )
+                .setTitle("是否开始规划任务？")
+                .setMessage("进行${Repository.getSavedPlanInfo()["planName"]}")
+                .setPositiveButton("发起活动") { _, _ ->
+                    val planMap = Repository.getSavedPlanInfo()
+                    val planName = planMap["planName"] as String
+                    val planType = planMap["planType"] as Int
+                    val type = "规划任务"
+                    val duration = planMap["goalMinute"] as Int
+                    val startTimeMillis = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    val intent = Intent(activity, DoingEventActivity::class.java)
+                    intent.putExtra("event_name", planName)
+                    intent.putExtra("event_type", type)
+                    intent.putExtra("event_index", planType)
+                    intent.putExtra("event_start_time", startTimeMillis)
+                    intent.putExtra("event_goal", "${duration}分钟")
+                    intent.putExtra("event_duration", duration)
+                    startActivity(intent)
+                    Repository.saveEventInfo(planName,type,planType,startTimeMillis,"坚持${duration}分钟")
+                    Repository.clearPlanInfo()
+                }
+                .setNegativeButton ("取消"){_, _ ->
+                    Repository.clearPlanInfo()
+                }
+                .create()
+            dialog.show()
+        }
+    }
 
     fun setListener(){
         //下拉刷新监听器

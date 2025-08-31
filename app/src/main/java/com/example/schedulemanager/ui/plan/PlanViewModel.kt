@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Plan
 import androidx.lifecycle.viewModelScope
+import com.example.schedulemanager.notification.AlarmHelper
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -28,12 +29,29 @@ class PlanViewModel: ViewModel() {
     }
     fun refreshPlans(){
         viewModelScope.launch {
+
             try {
                 val plans = Repository.getAllPlans()
                 planList.value = Result.success(plans)
             } catch (e: Exception) {
                 planList.value = Result.failure(e)
             }
+        }
+    }
+    fun refreshAfterInsert(plan: Plan){
+        viewModelScope.launch {
+            Repository.insertPlan(plan)
+            try {
+                val plans = async { Repository.getAllPlans() }
+                planList.value = Result.success(plans.await())
+            } catch (e: Exception) {
+                planList.value = Result.failure(e)
+            }
+        }
+    }
+    fun updatePlan(plan: Plan){
+        viewModelScope.launch {
+            Repository.updatePlan(plan)
         }
     }
 }

@@ -18,8 +18,10 @@ import com.example.schedulemanager.logic.model.Plan
 import com.example.schedulemanager.logic.model.TIMES
 import com.example.schedulemanager.logic.model.getRender
 import com.example.schedulemanager.logic.model.toChinese
+import com.example.schedulemanager.notification.AlarmHelper
 import com.example.schedulemanager.ui.plan.PlanAdapter.Companion.PlanDiffCallback
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.ViewHolder>(PlanDiffCallback) {
     var isEditMode = false // 是否处于编辑模式
@@ -84,18 +86,46 @@ class PlanAdapter(val fragment: PlanFragment,) : ListAdapter<Plan, PlanAdapter.V
             holder.btnSelected.visibility = View.VISIBLE
             holder.btnSelected.isChecked = fragment.viewModel.selectedList[position]
             holder.card.setOnClickListener {
-                Log.v("test", "${fragment.viewModel.selectedList[position]}")
+
                 fragment.viewModel.selectedList[position] = !holder.btnSelected.isChecked
                 holder.btnSelected.isChecked = !holder.btnSelected.isChecked
             }
         }else{
+
             holder.btnSelected.visibility = View.INVISIBLE
-            holder.card.setOnClickListener {
-                plan.isEnable = !plan.isEnable
-                when(plan.isEnable){
-                    true -> holder.card.setCardBackgroundColor(ContextCompat.getColor(context,getRender(plan.type).color) )
-                    false -> holder.card.setCardBackgroundColor(ContextCompat.getColor(context,R.color.colorSurface) )
+            val dialog = MaterialAlertDialogBuilder(fragment.requireContext(),R.style.CustomMaterialAlertDialog)
+                .setNegativeButton("取消",null)
+                .setPositiveButton("确定"){ dialog, which ->
+                    plan.isEnable = !plan.isEnable
+                    fragment.viewModel.updatePlan(plan)
+                    when(plan.isEnable){
+                        true -> {
+                            holder.card.setCardBackgroundColor(
+                                ContextCompat.getColor(
+                                    context,
+                                    getRender(plan.type).color
+                                )
+                            )
+                            fragment.alarmHelper.setAlarm(plan,"start")
+                        }
+                        false -> {
+                            holder.card.setCardBackgroundColor(
+                                ContextCompat.getColor(
+                                    context,
+                                    R.color.colorSurface
+                                )
+                            )
+                            fragment.alarmHelper.cancelAlarm(plan)
+                        }
+                    }
                 }
+                .create()
+
+            holder.card.setOnClickListener {
+                dialog.setTitle(if(plan.isEnable) "禁用该规划？" else "启用该规划？")
+                dialog.setMessage(if(plan.isEnable) "禁用后将不会触发该规划" else "启用后将会触发该规划")
+                dialog.show()
+
             }
         }
 

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.schedulemanager.databinding.ActivityMainBinding
+import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.ui.event.EventFragment
 import com.example.schedulemanager.ui.plan.PlanFragment
 import java.time.LocalDateTime
@@ -23,7 +24,23 @@ class MainActivity : BaseActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val fragmentManager: FragmentManager = supportFragmentManager
+        val intentType = intent?.getStringExtra("intentType")
+        when(intentType){
+            "fromPlanNotification" -> {
+                if (Repository.isPlanSaved()){
+                    Repository.clearPlanInfo()
+                }
+                val planName = intent?.getStringExtra("planName") ?: ""
+                val planType = intent?.getIntExtra("planType",0) ?: 0
+                val type = intent?.getStringExtra("type")?:""
+                val duration = intent?.getIntExtra("duration",0) ?: 0
+                Repository.savePlanInfo(planName,planType,duration)
+            }
 
+            else -> {
+
+            }
+        }
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.item_event ->{

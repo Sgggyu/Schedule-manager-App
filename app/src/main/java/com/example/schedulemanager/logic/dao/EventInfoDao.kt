@@ -21,7 +21,6 @@ object EventInfoDao {
             putString("eventDescription", description)
         }
     }
-
     fun getEventDescription(): String? {
         return sharedPreferences().getString("eventDescription", "")
     }

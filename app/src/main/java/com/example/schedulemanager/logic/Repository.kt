@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.logic.dao.EventInfoDao
+import com.example.schedulemanager.logic.dao.PlanInfoDao
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.logic.model.EventData
 import com.example.schedulemanager.logic.model.Plan
@@ -15,6 +16,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.LocalTime
+import kotlin.time.Duration
 
 object Repository {
     val tag = "Repository"
@@ -91,6 +93,10 @@ object Repository {
         withContext(Dispatchers.IO) {
             planDao.insertPlans(plans)
         }
+    suspend fun updatePlan(plan: Plan) =
+        withContext(Dispatchers.IO) {
+            planDao.updatePlan(plan)
+        }
 
     suspend fun getAllPlans(): List<Plan> {
         return planDao.getAllPlans()
@@ -126,4 +132,12 @@ object Repository {
     fun clearEventInfo() = EventInfoDao.clearEventInfo()
     fun saveDescription(description: String) = EventInfoDao.saveDescription(description)
     fun getEventDescription(): String? = EventInfoDao.getEventDescription()
+    fun savePlanInfo(
+        planName: String,
+        type: Int,
+        duration: Int
+    ) = PlanInfoDao.savePlanInfo(planName, type, duration)
+    fun getSavedPlanInfo() = PlanInfoDao.getSavedPlanInfo()
+    fun isPlanSaved() = PlanInfoDao.isPlanSaved()
+    fun clearPlanInfo() = PlanInfoDao.clearPlanInfo()
 }

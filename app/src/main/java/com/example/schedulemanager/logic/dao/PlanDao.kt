@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.schedulemanager.logic.model.Plan
 
 @Dao
@@ -14,7 +15,8 @@ interface PlanDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlans(plans: List<Plan>)
-
+    @Update
+    suspend fun updatePlan(plan: Plan)
     @Query("SELECT * FROM planTable")
     suspend fun getAllPlans(): List<Plan>
 

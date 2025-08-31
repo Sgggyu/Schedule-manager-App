@@ -18,6 +18,7 @@ import com.example.schedulemanager.R
 import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.databinding.FragmentPlanBinding
 import com.example.schedulemanager.logic.model.Plan
+import com.example.schedulemanager.notification.AlarmHelper
 
 class PlanFragment : Fragment() {
     private  var _binding: FragmentPlanBinding?=null
@@ -26,6 +27,7 @@ class PlanFragment : Fragment() {
     val viewModel by lazy {
         ViewModelProvider(this)[PlanViewModel::class.java]
     }
+    val alarmHelper by lazy { AlarmHelper(requireContext()) }
 
     val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
         if (it.resultCode == Activity.RESULT_OK){
@@ -36,15 +38,13 @@ class PlanFragment : Fragment() {
             val startTimeString = data?.getStringExtra("plan_start_time") ?: ""
             val endTimeString = data?.getStringExtra("plan_end_time") ?: ""
             val insertPlan = Plan(0,name,typeIndex,triggerIndex,startTimeString,endTimeString,true)
-            viewModel.plans.add(insertPlan)
-            viewModel.selectedList = MutableList<Boolean>(viewModel.plans.size){false}
-            Log.v("test","after insert, plans size is ${viewModel.plans.size}")
-            adapter.submitList(viewModel.plans.toList())
-            viewModel.insertPlan(insertPlan)
+            alarmHelper.setAlarm(insertPlan,"start")
+            viewModel.refreshAfterInsert(insertPlan)
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
 
     }
@@ -66,10 +66,9 @@ class PlanFragment : Fragment() {
             Log.v("test","observe 触发")
             viewModel.plans.clear()
             viewModel.plans.addAll(viewModel.planList.value?.getOrNull()?: emptyList())
-//            Log.v("test","planList changed, new size is ${viewModel.plans.size}")
+            Log.v("test","planList changed, new size is ${viewModel.plans.size}")
             viewModel.selectedList = MutableList(viewModel.plans.size){false}
-            adapter.submitList(viewModel.plans.toList())
-            adapter.notifyItemInserted(viewModel.plans.size)
+            adapter.submitList(viewModel.plans)
         })
 
         viewModel.isEdit.observe(viewLifecycleOwner, Observer{
@@ -91,10 +90,6 @@ class PlanFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        Log.v("test","fragment start")
-        //每次进入都会对selectedList进行刷新
-
-        Log.v("test","after insert, selectedList size is ${viewModel.selectedList.size}")
 
     }
     private fun setListener(){
@@ -120,6 +115,9 @@ class PlanFragment : Fragment() {
                 viewModel.selectedList = MutableList(viewModel.plans.size){false}
                 adapter.submitList(viewModel.plans)
                 viewModel.deletePlans(removeList)
+                removeList.forEach {
+                    alarmHelper.cancelAlarm(it)
+                }
                 viewModel.isEdit.value = false
 
             }else{

@@ -97,6 +97,13 @@ class DoingEventActivity : BaseActivity() {
         binding.fabAction.shrink()
         setListener()
     }
+
+    override fun onStart() {
+        super.onStart()
+        if (Repository.isPlanSaved()){
+            save()
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         Repository.saveDescription(viewModel.description)
@@ -136,63 +143,69 @@ class DoingEventActivity : BaseActivity() {
         }
 
         binding.fabAction.setOnLongClickListener {
-            val textTime = binding.timer.text.split(":").map { it.toInt() }
-            val seconds = when(textTime.size) {
-                3 -> textTime[0] * 3600L + textTime[1] * 60L + textTime[2]
-                2-> textTime[0] * 60L + textTime[1]
-                else -> 0L
-            }
-            if (seconds<900L || seconds>= 24*3600L){
-                val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
-                    .setTitle("时间错误")
-                    .setMessage("当前任务时间不合法，必须大于15分钟且小于24小时,此次任务不记录,确定要结束吗？")
-                    .setNegativeButton ("取消",null)
-                    .setPositiveButton("确定"){
-                            _: Any, _: Any ->
-                        viewModel.eventName = ""
-                        viewModel.startTime = null
-                        viewModel.eventType = ""
-                        viewModel.eventGoal = ""
-                        viewModel.description = ""
-                        Repository.clearEventInfo()
-                        val serviceIntent = Intent(this, NotificationService::class.java)
-                        stopService(serviceIntent)
-                        finish()
-                    }
-                dialog.show()
-            }else {
-                // 如果时间合法，弹出结束任务对话框
-                val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
-                    .setTitle("结束任务")
-                    .setMessage("是否结束当前任务？")
-                    .setNegativeButton("取消", null)
-                    .setPositiveButton("确定") { _: Any, _: Any ->
-                        val event = Event(0,EventData(
-                            viewModel.eventName,
-                            viewModel.startTime!!,
-                            LocalDateTime.now(),
-                            viewModel.startTime!!.dayOfWeek.value,
-                            viewModel.typeId,
-                            viewModel.description
-                        )
-                        )
-                        lifecycleScope.launch {
-                            Repository.insertEvent(event)
-                        }
-                        viewModel.eventName = ""
-                        viewModel.startTime = null
-                        viewModel.eventType = ""
-                        viewModel.eventGoal = ""
-                        viewModel.description = ""
-                        Repository.clearEventInfo()
-                        val serviceIntent = Intent(this, NotificationService::class.java)
-                        stopService(serviceIntent)
-                        finish()
-                    }
-                dialog.show()
-            }
+            save()
             true
         }
 
+
+
+    }
+
+    fun save(){
+        val textTime = binding.timer.text.split(":").map { it.toInt() }
+        val seconds = when(textTime.size) {
+            3 -> textTime[0] * 3600L + textTime[1] * 60L + textTime[2]
+            2-> textTime[0] * 60L + textTime[1]
+            else -> 0L
+        }
+        if (seconds<900L || seconds>= 24*3600L){
+            val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
+                .setTitle("时间错误")
+                .setMessage("当前任务时间不合法，必须大于15分钟且小于24小时,此次任务不记录,确定要结束吗？")
+                .setNegativeButton ("取消",null)
+                .setPositiveButton("确定"){
+                        _: Any, _: Any ->
+                    viewModel.eventName = ""
+                    viewModel.startTime = null
+                    viewModel.eventType = ""
+                    viewModel.eventGoal = ""
+                    viewModel.description = ""
+                    Repository.clearEventInfo()
+                    val serviceIntent = Intent(this, NotificationService::class.java)
+                    stopService(serviceIntent)
+                    finish()
+                }
+            dialog.show()
+        }else {
+            // 如果时间合法，弹出结束任务对话框
+            val dialog = MaterialAlertDialogBuilder(this,R.style.CustomMaterialAlertDialog)
+                .setTitle("结束任务")
+                .setMessage("是否结束当前任务？")
+                .setNegativeButton("取消", null)
+                .setPositiveButton("确定") { _: Any, _: Any ->
+                    val event = Event(0,EventData(
+                        viewModel.eventName,
+                        viewModel.startTime!!,
+                        LocalDateTime.now(),
+                        viewModel.startTime!!.dayOfWeek.value,
+                        viewModel.typeId,
+                        viewModel.description
+                    )
+                    )
+                    lifecycleScope.launch {
+                        Repository.insertEvent(event)
+                    }
+                    viewModel.eventName = ""
+                    viewModel.startTime = null
+                    viewModel.eventType = ""
+                    viewModel.eventGoal = ""
+                    viewModel.description = ""
+                    Repository.clearEventInfo()
+                    val serviceIntent = Intent(this, NotificationService::class.java)
+                    stopService(serviceIntent)
+                    finish()
+                }
+            dialog.show()
+        }
     }
 }

@@ -12,6 +12,7 @@ private val render = mapOf(
     TYPE.EXERCISE to BagOfRender("锻炼",R.drawable.ic_exercise,R.color.exercise),
     TYPE.STUDY to BagOfRender("学习",R.drawable.ic_study,R.color.study),
     TYPE.MEAL to BagOfRender("吃饭",R.drawable.ic_meal,R.color.meal),
+    TYPE.LEISURE to BagOfRender("娱乐",R.drawable.ic_leisure,R.color.leisure),
     TYPE.RELAX to BagOfRender("休息",R.drawable.ic_relax,R.color.relax),
     TYPE.OTHER to BagOfRender("其他",R.drawable.ic_other,R.color.other),
 

@@ -52,14 +52,16 @@
                     android:textSize="24sp"/>
             </LinearLayout>
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/btn_refresh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_refresh"/>
+                android:padding="12dp"
+                android:src="@drawable/ic_refresh"
+                />
         </RelativeLayout>
 
 
@@ -67,10 +69,10 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#999999"/>
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewpager_event"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewpager_event"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
 
     </LinearLayout>

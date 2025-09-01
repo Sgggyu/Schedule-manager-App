@@ -143,7 +143,7 @@
         android:id="@+id/fab_action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="24dp"
+        android:padding="6dp"
         android:text="保存(长按）"
         app:icon="@drawable/ic_stop"
         android:layout_margin="64dp"

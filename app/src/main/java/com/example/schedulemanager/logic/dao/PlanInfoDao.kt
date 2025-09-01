@@ -13,7 +13,7 @@ object PlanInfoDao {
         PlanInfoDao.sharedPreferences().edit {
             putString("planName", planName)
             putInt("planType", type)
-            putInt("goalMinute", duration)
+            putInt("duration", duration)
 
         }
     }
@@ -28,7 +28,7 @@ object PlanInfoDao {
     fun isPlanSaved(): Boolean{
         return PlanInfoDao.sharedPreferences().contains("planName") &&
                 PlanInfoDao.sharedPreferences().contains("planType")&&
-                PlanInfoDao.sharedPreferences().contains("planGoal")
+                PlanInfoDao.sharedPreferences().contains("duration")
 
     }
 

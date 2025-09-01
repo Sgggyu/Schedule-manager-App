@@ -146,8 +146,7 @@ class DoingEventActivity : BaseActivity() {
             save()
             true
         }
-
-
+        
 
     }
 

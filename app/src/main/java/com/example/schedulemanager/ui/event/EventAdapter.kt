@@ -71,12 +71,19 @@ class EventAdapter(val monthList: ArrayList<List<Event>>,val fragment: EventFrag
         val firstDayOfMonth = currentTime.withDayOfMonth(1)
         val firstMonday = firstDayOfMonth.minusDays(((firstDayOfMonth.dayOfWeek.value + 6) % 7).toLong())
         val startOfWeek = firstMonday.plusWeeks(position.toLong())
+        val monthValue = firstDayOfMonth.monthValue
 
-
-        holder.month.text = "${startOfWeek.monthValue}"
+        holder.month.text = "$monthValue"
         // 渲染一周的日期和卡片
         for (i in 0 until 7) {
             val date = startOfWeek.plusDays(i.toLong())
+            if (date.month.value != monthValue){
+                //不是本月份的，清理掉
+                holder.dayList[i].text = ""
+                holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorBackground))
+                holder.containerList[i].removeAllViews()
+                continue
+            }
             holder.dayList[i].text = date.dayOfMonth.toString()
             if (date.dayOfMonth == currentTime.dayOfMonth) {
                 holder.dayList[i].setBackgroundColor(ContextCompat.getColor(context,R.color.colorPrimary)) // 设置今天的日期背景色,蓝色

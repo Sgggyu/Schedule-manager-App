@@ -133,10 +133,11 @@ object Repository {
     fun saveDescription(description: String) = EventInfoDao.saveDescription(description)
     fun getEventDescription(): String? = EventInfoDao.getEventDescription()
     fun savePlanInfo(
+        planId: Int,
         planName: String,
         type: Int,
         duration: Int
-    ) = PlanInfoDao.savePlanInfo(planName, type, duration)
+    ) = PlanInfoDao.savePlanInfo(planId,planName, type, duration)
     fun getSavedPlanInfo() = PlanInfoDao.getSavedPlanInfo()
     fun isPlanSaved() = PlanInfoDao.isPlanSaved()
     fun clearPlanInfo() = PlanInfoDao.clearPlanInfo()

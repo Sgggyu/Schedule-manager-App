@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_alignParentBottom="true"
+            app:itemBackground="@drawable/bottom_navi_ripple"
             app:menu="@menu/menu_bottom"/>
     </LinearLayout>
 

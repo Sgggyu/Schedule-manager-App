@@ -15,17 +15,21 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.compose.material3.RangeSlider
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import com.example.schedulemanager.DoingEventActivity
 import com.example.schedulemanager.MainActivity
+import com.example.schedulemanager.PlanDialogActivity
 import com.example.schedulemanager.R
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Event
+import com.example.schedulemanager.notification.AlarmHelper
+import com.github.gzuliyujiang.wheelpicker.DatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -33,11 +37,16 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
 class EventFragment : Fragment() {
+
     private  var _binding: FragmentEventBinding?=null
     val binding get() = _binding!!
     val viewModel by lazy { ViewModelProvider(this)[EventViewModel::class.java] }
     lateinit var adapter: EventAdapter
-//    val activity = requireActivity() as MainActivity
+    val alarmHelper by lazy { AlarmHelper(requireContext()) }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,7 +55,7 @@ class EventFragment : Fragment() {
         viewModel.currentTime.value = LocalDateTime.now()
         binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
         setListener()
-        binding.viewpagerEvent.offscreenPageLimit = viewModel.monthEvents.size
+        binding.viewpagerEvent.offscreenPageLimit = 4
         adapter =  EventAdapter(viewModel.monthEvents, this)
         binding.viewpagerEvent.adapter = adapter
 
@@ -87,12 +96,14 @@ class EventFragment : Fragment() {
                 .setMessage("进行${Repository.getSavedPlanInfo()["planName"]}")
                 .setPositiveButton("确认") { _, _ ->
                     val planMap = Repository.getSavedPlanInfo()
+                    val planId = planMap["planId"] as Int
                     val planName = planMap["planName"] as String
                     val planType = planMap["planType"] as Int
                     val type = "规划任务"
                     val duration = planMap["goalMinute"] as Int
                     val startTimeMillis = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                     val intent = Intent(activity, DoingEventActivity::class.java)
+                    intent.putExtra("planId",planId)
                     intent.putExtra("event_name", planName)
                     intent.putExtra("event_type", type)
                     intent.putExtra("event_index", planType)
@@ -101,6 +112,7 @@ class EventFragment : Fragment() {
                     intent.putExtra("event_duration", duration)
                     startActivity(intent)
                     Repository.saveEventInfo(planName,type,planType,startTimeMillis,"坚持${duration}分钟")
+                    alarmHelper.setEndAlarm(planId,planName,duration*60*1000L)
                     Repository.clearPlanInfo()
                 }
                 .setNegativeButton ("取消"){_, _ ->
@@ -116,21 +128,22 @@ class EventFragment : Fragment() {
         binding.btnRefresh.setOnClickListener {
             refreshEvents()
         }
-        //日期监听器
-        binding.linearSetDatetime.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(requireContext(),null,viewModel.yearValue,viewModel.monthValue-1,viewModel.dayOfMonth)
-            datePickerDialog.show()
-            datePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                // 确认年月日
-                val year = datePickerDialog.getDatePicker().getYear();
-                val monthOfYear = datePickerDialog.getDatePicker().getMonth()+1 ;
-                val dayOfMonth = datePickerDialog.getDatePicker().getDayOfMonth();
-                viewModel.currentTime.value = LocalDateTime.of(year,monthOfYear,dayOfMonth,0,0)
-
-                // 关闭dialog
-                datePickerDialog.dismiss()
+        //日期选择部分
+        val datePickerDialog = DatePicker(activity as MainActivity)
+        datePickerDialog.apply {
+            wheelLayout.setSelectedTextColor(getResources().getColor(R.color.colorPrimary))
+            wheelLayout.setIndicatorEnabled(false)
+            setBackgroundColor(1, 16, getResources().getColor(R.color.colorSurface))
+            okView.setTextColor(ContextCompat.getColor(activity as MainActivity,R.color.colorPrimary))
+            cancelView.setTextColor(ContextCompat.getColor(activity as MainActivity,R.color.colorPrimary))
+            setOnDatePickedListener { year,month,day ->
+                viewModel.currentTime.value = LocalDateTime.of(year,month,day,0,0)
                 binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
             }
+        }
+        binding.linearSetDatetime.setOnClickListener {
+
+            datePickerDialog.show()
         }
 
         //悬浮按钮监听器

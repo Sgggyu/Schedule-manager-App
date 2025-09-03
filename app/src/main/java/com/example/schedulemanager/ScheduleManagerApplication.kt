@@ -17,6 +17,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
+
+// Application类，在这里进行一些全局初始化
 class ScheduleManagerApplication : Application() {
     companion object{
         @SuppressLint("StaticFieldLeak")

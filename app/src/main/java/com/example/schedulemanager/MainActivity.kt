@@ -32,11 +32,12 @@ class MainActivity : BaseActivity() {
                 if (Repository.isPlanSaved()){
                     Repository.clearPlanInfo()
                 }
+                val planId = intent?.getIntExtra("planId",0) ?: 0
                 val planName = intent?.getStringExtra("planName") ?: ""
                 val planType = intent?.getIntExtra("planType",0) ?: 0
                 val type = intent?.getStringExtra("type")?:""
                 val duration = intent?.getIntExtra("duration",0) ?: 0
-                Repository.savePlanInfo(planName,planType,duration)
+                Repository.savePlanInfo(planId,planName,planType,duration)
                 Log.v("test","MainActivity,isPlanSaved: ${Repository.isPlanSaved()}")
             }
 
@@ -44,6 +45,7 @@ class MainActivity : BaseActivity() {
 
             }
         }
+        binding.bottomNavigation
         binding.bottomNavigation.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.item_event ->{

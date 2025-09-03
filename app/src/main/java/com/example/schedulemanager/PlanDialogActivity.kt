@@ -29,12 +29,16 @@ import kotlinx.coroutines.launch
 
 class PlanDialogActivity : AppCompatActivity() {
     lateinit var binding: ActivityPlanDialogBinding
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityPlanDialogBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btnPlanSave.isEnabled = false
+        binding.tvSomethingImportant.text = "注意:\n" +
+                "该界面保存的规划默认未启用，需要在我的规划界面启用。\n" +
+                "同时需要在电池管理界面为该应用启用后台自启动，不然应用无法发出提醒。"
         setListener()
         setSupportActionBar(binding.toolbar)
         supportActionBar?.let{

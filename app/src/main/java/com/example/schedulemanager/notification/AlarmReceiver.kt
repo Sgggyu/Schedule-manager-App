@@ -27,6 +27,16 @@ class AlarmReceiver: BroadcastReceiver() {
         val duration = intent?.getIntExtra("duration",25)?: -1
         val calendar = Calendar.getInstance()
         val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        val plan = Plan(
+            id = planId,
+            name = title,
+            type = planType,
+            triggerMode = triggerMode ?: 0,
+            triggerStartTime = triggerStartTime,
+            triggerEndTime = triggerEndTime,
+            isEnable = true
+        )
+
         when(triggerMode){
             TIMES.EVERYDAY ->{
                 // 每天都触发
@@ -40,53 +50,47 @@ class AlarmReceiver: BroadcastReceiver() {
                             duration,
                             TIMES.EVERYDAY
                         )
-
                         alarmHelper.setRepeatingAlarm(
-                            Plan(
-                                id = planId,
-                                name = title,
-                                type = planType,
-                                triggerMode = triggerMode ?: 0,
-                                triggerStartTime = triggerStartTime,
-                                triggerEndTime = triggerEndTime,
-                                isEnable = true
-                            ), "start", interval = 24 * 60 * 60 * 1000L
+                            plan , "start", interval = 24 * 60 * 60 * 1000L
+                        )
+                    }else{
+                        NotificationHelper(context).planEndNotification(
+                            planId,
+                            title,
+                            planType
                         )
                     }
+
                 }
             }
 
             TIMES.WEEKDAY -> {
-                // 仅在工作日触发（周一到周五）
-                var interval = 24*60*60*1000L
-                if (dayOfWeek in Calendar.MONDAY..Calendar.THURSDAY) {
-
-                    if (context != null) {
-                        if (startOrEnd == "start"){
+                if (context != null) {
+                    if (startOrEnd == "start") {
+                        // 仅在工作日发送通知
+                        if (dayOfWeek in Calendar.MONDAY..Calendar.FRIDAY) {
                             NotificationHelper(context).planStartNotification(
                                 planId,
                                 title,
                                 content,
                                 planType,
                                 duration,
-                                TIMES.EVERYDAY
+                                TIMES.WEEKDAY
                             )
-                        } else {
-                            interval = 3*24*60*60*1000L // 周五的结束闹钟间隔三天到下周一
                         }
                         alarmHelper.setRepeatingAlarm(
-                            Plan(
-                                id = planId,
-                                name = title,
-                                type = planType,
-                                triggerMode = triggerMode ?: 0,
-                                triggerStartTime = triggerStartTime,
-                                triggerEndTime = triggerEndTime,
-                                isEnable = true
-                            ), "start", interval = interval
+                            plan, "start", interval = 24 * 60 * 60 * 1000L
+                        )
+                    } else {
+                        NotificationHelper(context).planEndNotification(
+                            planId,
+                            title,
+                            planType
                         )
                     }
                 }
+
+
             }
         }
     }

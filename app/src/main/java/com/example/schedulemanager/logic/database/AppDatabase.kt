@@ -72,8 +72,6 @@ abstract class AppDatabase : RoomDatabase(){
                 """.trimIndent())
             }
         }
-        @RenameTable(fromTableName = "Plan", toTableName = "plan_table")
-        class RenamePlanSpec : AutoMigrationSpec
 
         private var instance: AppDatabase? = null
 

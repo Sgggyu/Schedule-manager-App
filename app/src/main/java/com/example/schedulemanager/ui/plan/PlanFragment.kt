@@ -12,10 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.schedulemanager.PlanDialogActivity
 import com.example.schedulemanager.R
-import com.example.schedulemanager.databinding.FragmentEventBinding
 import com.example.schedulemanager.databinding.FragmentPlanBinding
 import com.example.schedulemanager.logic.model.Plan
 import com.example.schedulemanager.notification.AlarmHelper
@@ -43,9 +41,7 @@ class PlanFragment : Fragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -54,7 +50,6 @@ class PlanFragment : Fragment() {
     ): View? {
         _binding = FragmentPlanBinding.inflate(inflater,container, false)
         Log.v("test","viewModel.plans size is ${viewModel.plans.size}")
-
         adapter = PlanAdapter(this)
         binding.rvPlan.adapter = adapter
         val layoutManager = LinearLayoutManager(context)
@@ -68,18 +63,18 @@ class PlanFragment : Fragment() {
             Log.v("test","planList changed, new size is ${viewModel.plans.size}")
             viewModel.selectedList = MutableList(viewModel.plans.size){false}
             adapter.submitList(viewModel.plans)
+            binding.swipePlan.isRefreshing = false
         })
 
         viewModel.isEdit.observe(viewLifecycleOwner, Observer{
             if (it){
                 adapter.enterEditMode(it)
-                binding.btnDelete.setImageResource(R.drawable.ic_save)
+                binding.btnDelete.setImageResource(R.drawable.ic_delete_save)
             }
             else{
                 adapter.enterEditMode(it)
                 binding.btnDelete.setImageResource(R.drawable.ic_delete)
             }
-
         })
         viewModel.refreshPlans()
         //设置监听器
@@ -88,6 +83,7 @@ class PlanFragment : Fragment() {
     }
 
     override fun onStart() {
+
         super.onStart()
 
     }
@@ -95,7 +91,6 @@ class PlanFragment : Fragment() {
         binding.btnDelete.setOnClickListener {
             if (viewModel.isEdit.value == true){
                 //保存修改
-
                 val newList = ArrayList<Plan>()
                 val removeList = ArrayList<Plan>()
                 for (i in 0 .. viewModel.selectedList.size-1){
@@ -124,10 +119,16 @@ class PlanFragment : Fragment() {
                 viewModel.isEdit.value = true
             }
         }
+        //添加计划按钮
         binding.fabPlan.setOnClickListener {
             val intent = Intent(this.context, PlanDialogActivity::class.java)
             launcher.launch(intent)
         }
+        //刷新
+        binding.swipePlan.setColorSchemeResources(R.color.colorPrimary)
+        binding.swipePlan.setOnRefreshListener {
+            binding.swipePlan.isRefreshing = true
+            viewModel.refreshPlans()
+        }
     }
-
 }

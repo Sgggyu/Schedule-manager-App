@@ -26,6 +26,7 @@ import com.example.schedulemanager.PlanDialogActivity
 import com.example.schedulemanager.R
 import com.example.schedulemanager.ScheduleManagerApplication
 import com.example.schedulemanager.databinding.FragmentEventBinding
+import com.example.schedulemanager.extention.BaseFragment
 import com.example.schedulemanager.logic.Repository
 import com.example.schedulemanager.logic.model.Event
 import com.example.schedulemanager.notification.AlarmHelper
@@ -36,7 +37,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 
-class EventFragment : Fragment() {
+class EventFragment : BaseFragment() {
 
     private  var _binding: FragmentEventBinding?=null
     val binding get() = _binding!!
@@ -52,27 +53,7 @@ class EventFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentEventBinding.inflate(inflater,container,false)
-        viewModel.currentTime.value = LocalDateTime.now()
-        binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
-        setListener()
-        binding.viewpagerEvent.offscreenPageLimit = 4
-        adapter =  EventAdapter(viewModel.monthEvents, this)
-        binding.viewpagerEvent.adapter = adapter
 
-        //如果当前已经在进行活动，直接启动DoingEventActivity
-
-        viewModel.Events.observe(viewLifecycleOwner, Observer({
-            val events = it.getOrNull()
-
-            if (events!= null) {
-                viewModel.monthEvents.clear()
-                viewModel.monthEvents.addAll(events)
-                adapter.notifyDataSetChanged()
-            } else {
-                Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
-                it.exceptionOrNull()?.printStackTrace()
-            }
-        }))
         return binding.root
     }
 
@@ -121,6 +102,27 @@ class EventFragment : Fragment() {
                 .create()
             dialog.show()
         }
+        viewModel.currentTime.value = LocalDateTime.now()
+        binding.tvDatetime.text = "${viewModel.yearValue}年${viewModel.monthValue}月"
+        setListener()
+        binding.viewpagerEvent.offscreenPageLimit = 4
+        adapter =  EventAdapter(viewModel.monthEvents, this)
+        binding.viewpagerEvent.adapter = adapter
+
+        //如果当前已经在进行活动，直接启动DoingEventActivity
+
+        viewModel.Events.observe(viewLifecycleOwner, Observer({
+            val events = it.getOrNull()
+
+            if (events!= null) {
+                viewModel.monthEvents.clear()
+                viewModel.monthEvents.addAll(events)
+                adapter.notifyDataSetChanged()
+            } else {
+                Toast.makeText(context, "获取事件失败", Toast.LENGTH_SHORT).show()
+                it.exceptionOrNull()?.printStackTrace()
+            }
+        }))
     }
 
     fun setListener(){

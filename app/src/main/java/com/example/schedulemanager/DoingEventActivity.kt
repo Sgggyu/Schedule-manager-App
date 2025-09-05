@@ -1,10 +1,13 @@
 package com.example.schedulemanager
 
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.SystemClock
 import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.EditText
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.ComponentActivity
@@ -77,7 +80,7 @@ class DoingEventActivity : BaseActivity() {
         }
         //初始化界面
         binding.tvDoingName.text = viewModel.eventName
-        val formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日 HH:mm:ss")
+        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
         binding.tvDoingStartTime.text = viewModel.startTime?.format(formatter)
         binding.tvDoingType.text = viewModel.eventType
         binding.tvDoingGoal.text = viewModel.eventGoal
@@ -107,12 +110,14 @@ class DoingEventActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Repository.saveDescription(viewModel.description)
+
     }
     override fun getOnBackInvokedDispatcher(): OnBackInvokedDispatcher {
         return super.getOnBackInvokedDispatcher()
     }
 
     private fun setListener() {
+
         binding.textInputLayoutSummary.setEndIconOnClickListener {
             if (isEditMode) {
                 // 保存逻辑
@@ -146,7 +151,7 @@ class DoingEventActivity : BaseActivity() {
             save()
             true
         }
-        
+
 
     }
 

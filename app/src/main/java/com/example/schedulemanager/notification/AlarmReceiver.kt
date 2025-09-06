@@ -51,7 +51,7 @@ class AlarmReceiver: BroadcastReceiver() {
                             TIMES.EVERYDAY
                         )
                         alarmHelper.setRepeatingAlarm(
-                            plan , "start", interval = 24 * 60 * 60 * 1000L
+                            plan , "start", interval = 0
                         )
                     }else{
                         NotificationHelper(context).planEndNotification(
@@ -79,7 +79,7 @@ class AlarmReceiver: BroadcastReceiver() {
                             )
                         }
                         alarmHelper.setRepeatingAlarm(
-                            plan, "start", interval = 24 * 60 * 60 * 1000L
+                            plan, "start", interval = 0
                         )
                     } else {
                         NotificationHelper(context).planEndNotification(

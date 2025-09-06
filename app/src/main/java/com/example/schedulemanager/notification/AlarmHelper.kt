@@ -81,10 +81,6 @@ class AlarmHelper(private val context: Context) {
         )
 
         var triggerMillis = parseTimeToMillis(plan.triggerStartTime)
-        if (triggerMillis < System.currentTimeMillis()) {
-            // 如果触发时间已经过去，设置为明天
-            triggerMillis += 24 * 60 * 60 * 1000 // 加一天的毫秒数
-        }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
 
